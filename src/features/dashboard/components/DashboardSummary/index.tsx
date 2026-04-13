@@ -61,12 +61,14 @@ export default function DashBoardSummary() {
     }
   }, [mode, isGoalsFetched, githubGoals.length, openModal]);
 
+  const nickname = user?.nickname?.trim() || '';
+
   return (
     <>
       <div className="flex items-center justify-end pb-[30px] md:justify-between lg:pb-[34px]">
         {breakpoint !== 'mobile' && (
           <div className="flex flex-col gap-2">
-            <PageHeader title={`${user?.nickname}${t.dashboard.title}`} />
+            <PageHeader title={nickname ? `${nickname}${t.dashboard.title}` : t.dashboard.title} />
             {mode === 'GITHUB' && (
               <span className="text-xl text-gray-400 transition-all duration-200">{t.dashboard.githubModeDesc}</span>
             )}
@@ -110,14 +112,15 @@ function RecentPostCard() {
   const { data: todos } = useQuery(
     todoQueries.list({
       sort: 'LATEST',
+      limit: 4,
     }),
   );
-  const recentTodos = todos?.todos?.slice(0, 4) ?? [];
 
+  if (!todos) return null;
   return (
     <article className="flex h-[187px] h-fit w-full min-w-0 flex-col gap-[6px] rounded-[40px] bg-white px-4 py-[18px] md:h-[229px] md:p-4 lg:h-[256px] lg:p-8">
-      {recentTodos.length > 0 ? (
-        recentTodos.map((item) => <TaskCardWrapper key={item.id} item={item} mode="todo" />)
+      {todos?.todos.length > 0 ? (
+        todos?.todos.map((item) => <TaskCardWrapper key={item.id} item={item} mode="todo" />)
       ) : (
         <div className="flex h-full items-center justify-center">
           <span className="text-gray-500">{t.dashboard.noRecentTodo}</span>

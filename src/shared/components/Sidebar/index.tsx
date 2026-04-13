@@ -145,6 +145,7 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
                 src={'/image/bearlog-icon.png'}
                 alt="Logo"
                 fill
+                sizes={isOpen ? '48px' : '32px'}
                 className={`object-contain ${isOpen ? 'h-12 w-12' : 'h-8 w-8'}`}
               />
             </div>

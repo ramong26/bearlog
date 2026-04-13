@@ -17,12 +17,14 @@ export const goalQueries = {
     queryOptions({
       queryKey: goalKeys.list(params),
       queryFn: () => fetchGoals.getGoals(params),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   detail: (goalId: number) =>
     queryOptions({
       queryKey: goalKeys.detail(goalId),
       queryFn: () => fetchGoals.getGoal(goalId),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 };
 

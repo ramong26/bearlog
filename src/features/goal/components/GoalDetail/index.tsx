@@ -8,7 +8,7 @@ import Button from '@/shared/components/Button';
 import Empty from '@/shared/components/Empty';
 import TaskCardWrapper from '@/features/dashboard/components/TaskCardWrapper';
 
-import { goalQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import { useGithubTodoCreateModal } from '@/features/todo/hooks/useGithubTodoCreateModal';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -26,6 +26,11 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
     enabled: !!goalId,
   });
 
+  // const { data: todoDetail } = useQuery({
+  //   ...todoQueries.detail(goalDetail?.todoList),
+  //   enabled: !!goalId,
+  // });
+  console.log('goalDetail', goalDetail);
   const isGithubGoal = goalDetail?.source === 'GITHUB';
 
   const handleAddTodo = () => {
@@ -80,13 +85,13 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
         />
         <section className="rounded-2xl bg-white px-[28px] py-[32px]">
           <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
-            {goalDetail?.todoList && goalDetail?.todoList.length > 0 ? (
+            {/* {goalDetail?.todoList && goalDetail?.todoList.length > 0 ? (
               goalDetail.todoList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="todo" />)
             ) : (
               <div className="flex min-h-[120px] items-center justify-center">
                 <Empty>{t.goal.emptyTodo}</Empty>
               </div>
-            )}
+            )} */}
           </div>
         </section>
       </div>
@@ -94,13 +99,13 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
         <PageSubTitle subTitle="DONE" textClassName="font-semibold" className="py-[6px]" />
         <section className="rounded-2xl bg-white px-[28px] py-[32px]">
           <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
-            {goalDetail?.doneList && goalDetail?.doneList.length > 0 ? (
+            {/* {goalDetail?.doneList && goalDetail?.doneList.length > 0 ? (
               goalDetail.doneList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="done" />)
             ) : (
               <div className="flex min-h-[120px] items-center justify-center">
                 <Empty>{t.goal.emptyTodo}</Empty>
               </div>
-            )}
+            )} */}
           </div>
         </section>
       </div>

@@ -12,7 +12,7 @@ import Progressbar from '@/shared/components/Progressbar';
 import SearchInput from '@/shared/components/SearchInput';
 import TaskCardWrapper from '../TaskCardWrapper';
 
-import type { GoalDetailResponse } from '@/shared/lib/api';
+import type { GoalDetailResponse, TodoResponse } from '@/shared/lib/api';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import { useGithubTodoCreateModal } from '@/features/todo/hooks/useGithubTodoCreateModal';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -100,18 +100,8 @@ export default function GoalBox({ data }: GoalBoxProps) {
           </div>
         ) : (
           <>
-            <ListBox
-              title={t.allTodo.todo}
-              mode="todo"
-              goalId={data.id!}
-              searchItems={searchTodoItems}
-            />
-            <ListBox
-              title={t.allTodo.done}
-              mode="done"
-              goalId={data.id!}
-              searchItems={searchDoneItems}
-            />
+            <ListBox title={t.allTodo.todo} mode="todo" goalId={data.id!} searchItems={searchTodoItems} />
+            <ListBox title={t.allTodo.done} mode="done" goalId={data.id!} searchItems={searchDoneItems} />
           </>
         )}
       </div>
@@ -149,7 +139,7 @@ interface ListBoxProps {
   title: string;
   mode: 'todo' | 'done';
   goalId: number;
-  searchItems: { id: number; favorite?: boolean }[] | null;
+  searchItems: TodoResponse[] | null;
 }
 function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
   const bgColor = mode === 'todo' ? 'bg-[#E5F9F2]' : 'bg-white';
@@ -194,9 +184,7 @@ function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
             ))}
           </AnimatePresence>
           {searchItems === null && <div ref={sentinelRef} className="h-1" />}
-          {isFetchingNextPage && (
-            <div className="py-2 text-center text-xs text-gray-400">...</div>
-          )}
+          {isFetchingNextPage && <div className="py-2 text-center text-xs text-gray-400">...</div>}
         </div>
       </div>
     </div>

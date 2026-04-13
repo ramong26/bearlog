@@ -1,13 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import Empty from '@/shared/components/Empty';
 import PageSubTitle from '@/shared/components/PageSubTitle';
 import GoalBox from '../GoalBox';
-
-import { GoalListResponse } from '@/shared/lib/api';
 
 import { goalQueries } from '@/shared/lib/query/queryKeys';
 import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';
@@ -15,7 +13,7 @@ import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 export default function DashboardDetail() {
   const mode = useTodoModeStore((state) => state.mode);
-  const { data: goals } = useQuery(goalQueries.list());
+  const { data: goals } = useSuspenseQuery(goalQueries.list());
   const { t } = useLanguage();
 
   const visibleGoals = goals?.goals?.filter((goal) => goal.source === mode) ?? [];
@@ -36,7 +34,7 @@ export default function DashboardDetail() {
           />
           <div className="flex flex-col gap-[32px] pt-[10px]">
             {visibleGoals.map((goal) => (
-              <GoalDetailItem key={goal.id} goal={goal} />
+              goal.id ? <GoalDetailItem key={goal.id} goalId={goal.id} /> : null
             ))}
           </div>
         </>
@@ -45,10 +43,8 @@ export default function DashboardDetail() {
   );
 }
 
-function GoalDetailItem({ goal }: { goal: GoalListResponse['goals'][number] }) {
-  const { data: goalDetail } = useQuery(goalQueries.detail(goal.id));
-
-  if (!goalDetail) return null;
+function GoalDetailItem({ goalId }: { goalId: number }) {
+  const { data: goalDetail } = useSuspenseQuery(goalQueries.detail(goalId));
 
   return <GoalBox data={goalDetail} />;
 }

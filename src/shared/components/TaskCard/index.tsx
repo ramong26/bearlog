@@ -26,7 +26,6 @@ interface TaskCardProps {
   onStareClick: () => void;
   variant?: 'default' | 'green';
 }
-
 export default function TaskCard({ todo, onCheckboxClick, onStareClick, variant = 'default' }: TaskCardProps) {
   const isGreen = variant === 'green';
 

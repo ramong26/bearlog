@@ -22,7 +22,6 @@ import { useLanguage } from '@/shared/contexts/LanguageContext';
 interface GoalSummaryProps {
   goalId: number;
 }
-
 function GoalSummary({ goalId }: GoalSummaryProps) {
   const breakpoint = useBreakpoint();
   const { t } = useLanguage();
@@ -53,7 +52,6 @@ export default memo(GoalSummary);
 interface GoalInfoProps {
   goalDetail: GoalDetailResponse | undefined;
 }
-
 function GoalInfo({ goalDetail }: GoalInfoProps) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -151,7 +149,6 @@ function GoalInfo({ goalDetail }: GoalInfoProps) {
 interface GoalProgressProps {
   goalDetail: GoalDetailResponse | undefined;
 }
-
 function GoalProgress({ goalDetail }: GoalProgressProps) {
   const { t } = useLanguage();
   if (!goalDetail) return null;
@@ -187,7 +184,6 @@ function GoalProgress({ goalDetail }: GoalProgressProps) {
 interface LinkNoteProps {
   goalDetail: GoalDetailResponse | undefined;
 }
-
 function LinkNote({ goalDetail }: LinkNoteProps) {
   const { t } = useLanguage();
   const goalId = goalDetail?.id;
