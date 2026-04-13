@@ -24,42 +24,42 @@ export default function DashBoardSummary() {
   const { t } = useLanguage();
 
   const { data: user } = useQuery(userQueries.current());
-  const { data: goals, isFetched: isGoalsFetched } = useQuery(goalQueries.list());
+  // const { data: goals, isFetched: isGoalsFetched } = useQuery(goalQueries.list());
   const breakpoint = useBreakpoint();
 
   const mode = useTodoModeStore((state) => state.mode);
   const setMode = useTodoModeStore((state) => state.setMode);
   const { openModal } = useModalStore();
 
-  const githubGoals = goals?.goals?.filter((goal) => goal.source === 'GITHUB') ?? [];
+  // const githubGoals = goals?.goals?.filter((goal) => goal.source === 'GITHUB') ?? [];
 
   // GITHUB 모드 세션 내에서 레포 연결 모달 중복 오픈 방지
   const githubModalOpenedRef = useRef(false);
-  const prevGithubGoalsLengthRef = useRef(githubGoals.length);
+  // const prevGithubGoalsLengthRef = useRef(githubGoals.length);
 
   const handleModeChange = (nextMode: TodoMode) => {
     setMode(nextMode);
   };
 
-  useEffect(() => {
-    const prevLength = prevGithubGoalsLengthRef.current;
-    prevGithubGoalsLengthRef.current = githubGoals.length;
+  // useEffect(() => {
+  //   const prevLength = prevGithubGoalsLengthRef.current;
+  //   prevGithubGoalsLengthRef.current = githubGoals.length;
 
-    if (mode !== 'GITHUB') {
-      githubModalOpenedRef.current = false;
-      return;
-    }
+  //   if (mode !== 'GITHUB') {
+  //     githubModalOpenedRef.current = false;
+  //     return;
+  //   }
 
-    // 레포가 있다가 모두 해제된 경우 → 모달 다시 열 수 있도록 ref 초기화
-    if (prevLength > 0 && githubGoals.length === 0) {
-      githubModalOpenedRef.current = false;
-    }
+  //   // 레포가 있다가 모두 해제된 경우 → 모달 다시 열 수 있도록 ref 초기화
+  //   if (prevLength > 0 && githubGoals.length === 0) {
+  //     githubModalOpenedRef.current = false;
+  //   }
 
-    if (isGoalsFetched && githubGoals.length === 0 && !githubModalOpenedRef.current) {
-      githubModalOpenedRef.current = true;
-      openModal(<GithubRepoConnectModal />, undefined, 'bottom');
-    }
-  }, [mode, isGoalsFetched, githubGoals.length, openModal]);
+  //   if (isGoalsFetched && githubGoals.length === 0 && !githubModalOpenedRef.current) {
+  //     githubModalOpenedRef.current = true;
+  //     openModal(<GithubRepoConnectModal />, undefined, 'bottom');
+  //   }
+  // }, [mode, isGoalsFetched, githubGoals.length, openModal]);
 
   const nickname = user?.nickname?.trim() || '';
 

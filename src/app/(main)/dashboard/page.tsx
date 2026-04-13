@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import DashBoardSummary from '@/features/dashboard/components/DashboardSummary';
 import DashboardDetail from '@/features/dashboard/components/DashboardDetail';
 
-import { goalQueries, todoQueries, userQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries, userQueries } from '@/shared/lib/query/queryKeys';
 import { DataBoundary } from '@/shared/components/ErrorSuspenseBoundary';
 import DashboardDetailSkeleton from '@/features/dashboard/components/DashboardDetailSkeleton';
 
@@ -21,7 +21,6 @@ export default async function DashboardPage() {
     queryClient.prefetchQuery(userQueries.current()),
     queryClient.prefetchQuery(userQueries.progress()),
     queryClient.prefetchQuery(todoQueries.list({ sort: 'LATEST', search: '', limit: 4 })),
-    queryClient.prefetchQuery(goalQueries.list()),
   ]);
 
   const dehydratedState = dehydrate(queryClient);
@@ -30,11 +29,11 @@ export default async function DashboardPage() {
     <div className="flex w-full flex-col">
       <HydrationBoundary state={dehydratedState}>
         <DashBoardSummary />
-
-        <DataBoundary suspenseFallback={<DashboardDetailSkeleton />}>
-          <DashboardDetail />
-        </DataBoundary>
       </HydrationBoundary>
+
+      <DataBoundary suspenseFallback={<DashboardDetailSkeleton />}>
+        <DashboardDetail />
+      </DataBoundary>
     </div>
   );
 }
