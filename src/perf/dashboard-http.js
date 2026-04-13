@@ -8,9 +8,9 @@ const AUTH_COOKIE = __ENV.AUTH_COOKIE || '';
 const ACCESS_TOKEN = __ENV.ACCESS_TOKEN || '';
 const REFRESH_TOKEN = __ENV.REFRESH_TOKEN || '';
 
-const GOAL_LIST_LIMIT = toPositiveInt(__ENV.GOAL_LIST_LIMIT, 2);
+const GOAL_LIST_LIMIT = toPositiveInt(__ENV.GOAL_LIST_LIMIT, 10);
 const MAX_GOALS = toPositiveInt(__ENV.MAX_GOALS, GOAL_LIST_LIMIT);
-const TODO_LIMIT = toPositiveInt(__ENV.TODO_LIMIT, 5);
+const TODO_LIMIT = toPositiveInt(__ENV.TODO_LIMIT, 10);
 const SLEEP_SECONDS = toFloat(__ENV.SLEEP_SECONDS, 1);
 
 const goalIdFilter = (__ENV.GOAL_IDS || '')
