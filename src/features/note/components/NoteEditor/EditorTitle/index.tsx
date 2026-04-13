@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import noteIcon from '@/features/note/assets/icons/icon-note.png';
 import Input from '@/shared/components/Input';
 import clsx from 'clsx';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -16,7 +15,7 @@ export default function EditorTitle({ title, onChange, readOnly = false }: Edito
   const { t } = useLanguage();
   return (
     <section className="flex w-full items-center justify-between gap-3 pb-[30px]">
-      <Image src={noteIcon} width={40} height={40} alt="노트 아이콘" className="shrink-0" />
+      <Image src={'/image/note.png'} width={40} height={40} alt="노트 아이콘" className="shrink-0" />
       <Input
         value={title}
         onChange={onChange}

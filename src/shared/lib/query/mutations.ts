@@ -431,6 +431,7 @@ export const usePostLogout = () => {
 export const usePostNote = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToastStore();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: fetchNotes.postNote,
@@ -447,7 +448,7 @@ export const usePostNote = () => {
         queryKey: noteKeys.lists(),
       });
 
-      window.location.href = `/goal/${response.goalId}/note/${response.id}`;
+      router.push(`/goal/${response.goalId}/note/${response.id}`);
     },
     onError: () => {
       showToast('노트 작성에 실패했습니다.', 'fail');
@@ -458,13 +459,14 @@ export const usePostNote = () => {
 export const usePatchNote = (noteId: number, goalId: number) => {
   const queryClient = useQueryClient();
   const { showToast } = useToastStore();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: (body: PatchNoteRequest) => fetchNotes.patchNote(noteId, body),
     onSuccess: (response) => {
       queryClient.setQueryData(noteQueries.detail(noteId).queryKey, response);
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
-      window.location.href = `/goal/${goalId}/note/${noteId}`;
+      router.push(`/goal/${goalId}/note/${noteId}`);
     },
     onError: () => showToast('노트 수정에 실패했습니다', 'fail'),
   });

@@ -57,9 +57,19 @@ interface DropdownProps extends React.HTMLAttributes<HTMLButtonElement> {
   className?: string;
   defaultValue?: string;
   icon?: React.ReactNode;
+  placeholder?: string;
 }
 
-function Dropdown({ items, selectedValue, onSelectItem, isDisabled, className, defaultValue, icon }: DropdownProps) {
+function Dropdown({
+  items,
+  selectedValue,
+  onSelectItem,
+  isDisabled,
+  className,
+  defaultValue,
+  icon,
+  placeholder,
+}: DropdownProps) {
   const [isToggleOpen, setIsToggleOpen] = useState(false);
   const selectedItem =
     items.find((item) => item.value === selectedValue) || items.find((item) => item.value === defaultValue);
@@ -80,14 +90,21 @@ function Dropdown({ items, selectedValue, onSelectItem, isDisabled, className, d
         className={twMerge(
           dropdownVariants({ disabled: isDisabled }),
           'flex w-full items-center gap-2',
-          isToggleOpen && 'border-bearlog-500 rounded-2xl border',
+          isToggleOpen ? 'border-bearlog-500 rounded-2xl border' : "border-gray-100",
           className,
         )}
         disabled={isDisabled}
       >
         <div className="flex items-center justify-center gap-2">
           {icon}
-          <span className="line-clamp-1 text-sm font-normal md:text-base">{selectedItem?.label} </span>
+          <span
+            className={clsx(
+              'line-clamp-1 text-sm font-normal md:text-base',
+              selectedItem ? 'text-gray-700' : 'text-[#838383]',
+            )}
+          >
+            {selectedItem?.label ?? placeholder}
+          </span>
         </div>
         {/* //TODO 선택된 아이템 표시 */}
         <ChevronDown size={16} className="text-gray-400 dark:text-white" />
@@ -111,7 +128,7 @@ export function DropdownList({ items, onSelectItem, className }: DropdownListPro
   return (
     <div
       className={twMerge(
-        clsx('w-full overflow-hidden rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
+        clsx('w-full max-h-50 overflow-y-auto rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
       )}
     >
       {items.map((item) => (

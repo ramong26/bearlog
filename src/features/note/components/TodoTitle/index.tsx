@@ -14,7 +14,7 @@ export default function TodoTitle({ todoId }: { todoId: number }) {
         string={todo?.done ? 'DONE' : 'TO DO'}
         variant="green"
         className={clsx(
-          'rounded-md px-[5.5px] py-[3px] text-xs font-semibold',
+          'rounded-md px-[5.5px] py-[3px] text-xs font-semibold whitespace-nowrap',
           !todo?.done && 'text-bearlog-600 bg-[rgba(0,183,117,0.10)]',
           todo?.done && 'bg-[#BBB] text-[#FFF]',
         )}

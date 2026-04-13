@@ -8,6 +8,7 @@ import NoteItem from '@/features/note/components/NoteItem';
 import GoalItem from '@/features/note/components/GoalItem';
 import Pagination from '@/features/note/components/Pagination';
 import Empty from '@/shared/components/Empty';
+import { useLanguage } from '@/shared/contexts/LanguageContext';
 import clsx from 'clsx';
 
 interface NoteListClientProps {
@@ -21,6 +22,7 @@ interface NoteListClientProps {
 export default function NoteListClient({ goalId, search, sort, page, onPageChange }: NoteListClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
 
   const { data: goal } = useQuery(goalQueries.detail(goalId));
   const { data: noteList } = useQuery({
@@ -47,7 +49,7 @@ export default function NoteListClient({ goalId, search, sort, page, onPageChang
       </section>
 
       {notes.length === 0 ? (
-        <Empty>아직 등록된 노트가 없어요</Empty>
+        <Empty>{t.note.empty}</Empty>
       ) : (
         <section className={clsx('flex flex-col gap-3', 'md:gap-4', 'lg:grid lg:grid-cols-2 lg:gap-5')}>
           {notes.map((note) => (

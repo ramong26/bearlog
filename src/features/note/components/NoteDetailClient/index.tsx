@@ -49,7 +49,7 @@ export default function NoteDetailClient({ noteId, goalId }: NoteDetailClientPro
         createdAt={note.createdAt ?? ''}
       />
       <hr className="mt-4 mb-5 border-[#DDD] md:mt-6" />
-      <EditorContent content={note.content ?? ''} readOnly />
+      <EditorContent content={note.content ?? ''} linkUrl={note.linkUrl} readOnly />
     </div>
   );
 }

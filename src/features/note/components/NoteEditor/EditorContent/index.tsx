@@ -35,19 +35,22 @@ export default function EditorContent({
   const withoutSpace = text.replace(/\s/g, '').length;
 
   return (
-    <section className={clsx('flex justify-between min-h-0 flex-1 flex-col gap-2 pt-[14px] lg:pt-[10px]', className)}>
+    <section className={clsx('flex min-h-0 flex-1 flex-col justify-between gap-2 pt-[14px] lg:pt-[10px]', className)}>
       {readOnly ? (
-        <div
-          className="h-full w-full flex-1 cursor-default text-base font-normal leading-6 tracking-[-0.02em] text-[#333333]"
-          dangerouslySetInnerHTML={{ __html: content ?? '' }}
-        />
+        <>
+          {linkUrl && <LinkEmbed url={linkUrl} onRemove={() => {}} readOnly />}
+          <div
+            className="h-full w-full flex-1 cursor-default text-base leading-6 font-normal tracking-[-0.02em] text-gray-700"
+            dangerouslySetInnerHTML={{ __html: content ?? '' }}
+          />
+        </>
       ) : (
         <>
           {linkUrl && <LinkEmbed url={linkUrl} onRemove={() => onLinkUrlChange?.(null)} />}
           <TiptapEditorContent
             editor={editor}
             className={clsx(
-              'max-h-98.25 md:max-h-166 lg:max-h-134.25 min-h-0 w-full overflow-y-auto',
+              'max-h-[537px] w-full flex-1 overflow-y-auto',
               '[&_.ProseMirror]:min-h-75',
               '[&_.ProseMirror]:outline-none',
               '[&_.ProseMirror]:border-none',
@@ -55,7 +58,7 @@ export default function EditorContent({
               '[&_.ProseMirror]:font-normal',
               '[&_.ProseMirror]:leading-6',
               '[&_.ProseMirror]:tracking-[-0.02em]',
-              '[&_.ProseMirror]:text-[#333333]',
+              '[&_.ProseMirror]:text-gray-700',
               '[&_.ProseMirror_ul]:list-disc',
               '[&_.ProseMirror_ul]:pl-5',
               '[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]',
@@ -69,7 +72,9 @@ export default function EditorContent({
       )}
       {!readOnly && (
         <p className="text-right text-xs font-normal text-[#A4A4A4]">
-          {t.note.charCountWithSpace} {withSpace}{t.note.charUnit} | {t.note.charCountWithoutSpace} {withoutSpace}{t.note.charUnit}
+          {t.note.charCountWithSpace} {withSpace}
+          {t.note.charUnit} | {t.note.charCountWithoutSpace} {withoutSpace}
+          {t.note.charUnit}
         </p>
       )}
     </section>

@@ -138,7 +138,8 @@ export default function NoteCreateClient({ goal, todo }: NoteCreateClientProps) 
               variant="primary"
               className="px-[27px] py-[10px] text-sm"
             >
-              {isPending ? t.note.registering : t.note.register}
+              <span className="md:hidden">{isPending ? t.note.registering : t.note.register}</span>
+              <span className="hidden md:inline">{isPending ? t.note.registering : t.note.registerFull}</span>
             </Button>
           </div>
         </section>

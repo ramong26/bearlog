@@ -44,14 +44,14 @@ export default async function LandingPage() {
         </div>
 
         <div className="mt-10 flex justify-center md:mt-16">
-          <div className="relative h-[300px] w-full max-w-[1317px] md:h-[641px]">
+          <div className="w-full max-w-[1317px] px-6 md:px-[50px]">
             <Image
               src="/image/dashboard.png"
               alt="dashboard"
-              fill
+              width={1317}
+              height={641}
+              className="h-auto w-full rounded-2xl object-cover shadow-xl"
               priority
-              sizes="(max-width: 768px) 100vw, 1200px"
-              className="rounded-2xl object-contain shadow-xl"
             />
           </div>
         </div>

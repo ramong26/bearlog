@@ -177,7 +177,7 @@ export function PopupModal({ onConfirm, variant }: PopupModalProps) {
       <div className="flex gap-3">
         <Button
           variant="cancel"
-          className="flex-1 bg-[#F2F2F2] px-[18px] py-[10px] text-sm text-gray-500 md:py-[14px] md:text-[18px]"
+          className="flex-1 px-[18px] py-[10px] text-sm text-gray-500 md:py-[14px] md:text-[18px]"
           onClick={closeModal}
         >
           {t.modal.cancel}

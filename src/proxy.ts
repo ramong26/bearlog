@@ -4,16 +4,27 @@ import type { NextRequest } from 'next/server';
 import { refreshTokens, clearAuthCookies, applyAuthCookies } from '@/shared/lib/auth/token';
 
 export default async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 인터셉팅 라우트 우회: /goal/[id]/note/create
+  if (/^\/goal\/\d+\/note\/create$/.test(pathname)) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.delete('next-url');
+    return NextResponse.rewrite(request.nextUrl, {
+      request: { headers: requestHeaders },
+    });
+  }
+
   const accessToken = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
 
-  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard');
+  const isDashboard = pathname.startsWith('/dashboard');
   if (isDashboard && !accessToken && !refreshToken) {
     return redirectToLogin(request);
   }
 
-  const isLogin = request.nextUrl.pathname === '/login';
-  const isSignup = request.nextUrl.pathname === '/signup';
+  const isLogin = pathname === '/login';
+  const isSignup = pathname === '/signup';
   if ((isLogin || isSignup) && accessToken && refreshToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
@@ -47,7 +58,7 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/signup'],
+  matcher: ['/dashboard/:path*', '/login', '/signup', '/goal/:path*/note/create'],
 };
 
 function isValidToken(tokens: { accessToken?: string; refreshToken?: string }) {

@@ -26,9 +26,7 @@ export default function CalendarHeader({
         <button onClick={onPrev} className="cursor-pointer rounded-full p-1 hover:bg-gray-100">
           <ChevronsLeftIcon size={20} className="text-gray-500" />
         </button>
-        <span className="text-lg font-semibold text-gray-800">
-          {formattedYearMonth}
-        </span>
+        <span className="text-lg font-semibold text-gray-800">{formattedYearMonth}</span>
         <button onClick={onNext} className="cursor-pointer rounded-full p-1 hover:bg-gray-100">
           <ChevronsRightIcon size={20} className="text-gray-500" />
         </button>
@@ -37,7 +35,7 @@ export default function CalendarHeader({
       <div className="w-full lg:max-w-[350px]">
         <Dropdown
           icon={<Image src="/image/goal-todo.png" width={32} height={32} alt="목표 이미지 아이콘" />}
-          className="h-12 border-gray-100 bg-gray-50"
+          className="h-12 bg-gray-50"
           items={goalFilterItems}
           selectedValue={goalId !== undefined ? String(goalId) : ''}
           onSelectItem={onGoalChange}
