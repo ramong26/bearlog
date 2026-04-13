@@ -19,6 +19,20 @@ export class ApiError extends Error {
   }
 }
 const isClient = typeof window !== 'undefined';
+const ACCESS_TOKEN_COOKIE = 'accessToken';
+
+// 서버에서 쿠키를 읽어오는 함수
+const getServerAccessToken = async () => {
+  if (isClient) return undefined;
+
+  try {
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    return cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+  } catch {
+    return undefined;
+  }
+};
 
 export const apiRequest = async <TResponse, TBody = unknown>(
   url: string,
@@ -31,24 +45,43 @@ export const apiRequest = async <TResponse, TBody = unknown>(
 
   const cleanUrl = isClient ? url.replace(/^\/api\/v1\//, '/') : url;
 
+  // 클라이언트 요청이면 프록시 경로를 사용하고, 서버 요청이면 API_BASE_URL을 사용
   const fullUrl = isClient
     ? `/api/proxy${cleanUrl}${queryString}`
     : `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}${queryString}`;
 
+  // 서버 요청이면 쿠키에서 액세스 토큰을 가져와서 Authorization 헤더에 추가
+  const requestHeaders = new Headers({
+    'Content-Type': 'application/json',
+    ...headers,
+  });
+
+  if (!isClient && !requestHeaders.has('Authorization')) {
+    const accessToken = await getServerAccessToken();
+    if (accessToken) {
+      requestHeaders.set('Authorization', `Bearer ${accessToken}`);
+    }
+  }
+
+  // 최종 fetch 요청
   return fetch(fullUrl, {
     ...(isClient ? { credentials: 'include' } : {}),
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-    },
+    headers: requestHeaders,
     body: body ? JSON.stringify(body) : undefined,
     signal,
     cache,
     next,
-  }).then((response) => {
+  }).then(async (response) => {
     if (!response.ok) {
-      throw new ApiError(response.status, response.statusText);
+      let errorMessage = response.statusText || `HTTP ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // JSON 파싱 실패 시 무시
+      }
+      throw new ApiError(response.status, errorMessage);
     }
     return response.json() as Promise<TResponse>;
   });

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef, useEffect } from 'react';
 import { ChevronRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -11,64 +10,38 @@ import PageSubTitle from '@/shared/components/PageSubTitle';
 import ProgressCircle from '@/shared/components/ProgressCircle';
 import TabChangeMode from '@/shared/components/TabChangeMode';
 import TaskCardWrapper from '../TaskCardWrapper';
-import GithubRepoConnectModal from '@/shared/components/Modal/GithubRepoConnectModal';
 
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
-
-import { todoQueries, userQueries, goalQueries } from '@/shared/lib/query/queryKeys';
-import { useModalStore } from '@/shared/stores/useModalStore';
+import { todoQueries, userQueries } from '@/shared/lib/query/queryKeys';
 import { useTodoModeStore, TodoMode } from '@/shared/stores/useTodoModeStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
+import type { CurrentUserResponse } from '@/shared/lib/api';
 
-export default function DashBoardSummary() {
+// 여기서는 useQuery(goalQueries.list());를 사용하면 안됨.. 다른 방법을 찾아야 한다.
+interface DashBoardSummaryProps {
+  initialUser?: CurrentUserResponse;
+}
+export default function DashBoardSummary({ initialUser }: DashBoardSummaryProps) {
   const { t } = useLanguage();
-
-  const { data: user } = useQuery(userQueries.current());
-  // const { data: goals, isFetched: isGoalsFetched } = useQuery(goalQueries.list());
   const breakpoint = useBreakpoint();
-
   const mode = useTodoModeStore((state) => state.mode);
   const setMode = useTodoModeStore((state) => state.setMode);
-  const { openModal } = useModalStore();
 
-  // const githubGoals = goals?.goals?.filter((goal) => goal.source === 'GITHUB') ?? [];
-
-  // GITHUB 모드 세션 내에서 레포 연결 모달 중복 오픈 방지
-  const githubModalOpenedRef = useRef(false);
-  // const prevGithubGoalsLengthRef = useRef(githubGoals.length);
+  const { data: user } = useQuery({
+    ...userQueries.current(),
+    initialData: initialUser,
+  });
 
   const handleModeChange = (nextMode: TodoMode) => {
     setMode(nextMode);
   };
-
-  // useEffect(() => {
-  //   const prevLength = prevGithubGoalsLengthRef.current;
-  //   prevGithubGoalsLengthRef.current = githubGoals.length;
-
-  //   if (mode !== 'GITHUB') {
-  //     githubModalOpenedRef.current = false;
-  //     return;
-  //   }
-
-  //   // 레포가 있다가 모두 해제된 경우 → 모달 다시 열 수 있도록 ref 초기화
-  //   if (prevLength > 0 && githubGoals.length === 0) {
-  //     githubModalOpenedRef.current = false;
-  //   }
-
-  //   if (isGoalsFetched && githubGoals.length === 0 && !githubModalOpenedRef.current) {
-  //     githubModalOpenedRef.current = true;
-  //     openModal(<GithubRepoConnectModal />, undefined, 'bottom');
-  //   }
-  // }, [mode, isGoalsFetched, githubGoals.length, openModal]);
-
-  const nickname = user?.nickname?.trim() || '';
 
   return (
     <>
       <div className="flex items-center justify-end pb-[30px] md:justify-between lg:pb-[34px]">
         {breakpoint !== 'mobile' && (
           <div className="flex flex-col gap-2">
-            <PageHeader title={nickname ? `${nickname}${t.dashboard.title}` : t.dashboard.title} />
+            <PageHeader title={user?.nickname ? `${user.nickname}${t.dashboard.title}` : t.dashboard.title} />
             {mode === 'GITHUB' && (
               <span className="text-xl text-gray-400 transition-all duration-200">{t.dashboard.githubModeDesc}</span>
             )}
@@ -112,6 +85,7 @@ function RecentPostCard() {
   const { data: todos } = useQuery(
     todoQueries.list({
       sort: 'LATEST',
+      search: '',
       limit: 4,
     }),
   );

@@ -20,19 +20,20 @@ import { todoQueries } from '@/shared/lib/query/queryKeys';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 interface GoalBoxProps {
-  data: GoalDetailResponse;
+  goalDetail: GoalDetailResponse;
 }
-export default function GoalBox({ data }: GoalBoxProps) {
+export default function GoalBox({ goalDetail }: GoalBoxProps) {
   const { openTodoCreateModal } = useTodoCreateModal();
   const { openGithubTodoCreateModal } = useGithubTodoCreateModal();
   const { t } = useLanguage();
+  const isGithubGoal = goalDetail.source === 'GITHUB';
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search.trim(), 300);
   const isSearching = debouncedSearch.length > 0;
 
   const { data: searchResult } = useQuery({
-    ...todoQueries.list({ sort: 'LATEST', search: debouncedSearch, goalId: data.id }),
+    ...todoQueries.list({ sort: 'LATEST', search: debouncedSearch, goalId: goalDetail.id }),
     placeholderData: keepPreviousData,
     enabled: isSearching,
   });
@@ -40,22 +41,20 @@ export default function GoalBox({ data }: GoalBoxProps) {
   const searchTodoItems = isSearching ? (searchResult?.todos.filter((todo) => !todo.done) ?? null) : null;
   const searchDoneItems = isSearching ? (searchResult?.todos.filter((todo) => todo.done) ?? null) : null;
 
-  const isGithubGoal = data.source === 'GITHUB';
-
   const handleAddTodo = () => {
-    if (data.id === undefined) return;
+    if (goalDetail.id === undefined) return;
 
     if (isGithubGoal) {
       openGithubTodoCreateModal({
-        goalId: data.id,
-        goalTitle: data.title,
+        goalId: goalDetail.id,
+        goalTitle: goalDetail.title,
       });
     } else {
       openTodoCreateModal({
-        goalDetailId: data.id,
+        goalDetailId: goalDetail.id,
         todo: {
           title: '',
-          goalId: data.id,
+          goalId: goalDetail.id,
           dueDate: undefined,
           linkUrl: undefined,
           imageUrl: undefined,
@@ -70,7 +69,7 @@ export default function GoalBox({ data }: GoalBoxProps) {
   return (
     <article className="flex flex-col gap-4 rounded-[40px] bg-white p-6 lg:px-8 lg:py-6">
       <div className="flex flex-col items-center gap-2 px-2 md:flex-row md:gap-12 lg:gap-8">
-        <GoalName data={data} />
+        <GoalName goalDetail={goalDetail} />
 
         <div className="flex w-full flex-1 justify-between gap-0 md:justify-end md:gap-2 lg:gap-[14px]">
           <SearchInput
@@ -82,7 +81,7 @@ export default function GoalBox({ data }: GoalBoxProps) {
           <Button
             variant="primary"
             className="p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px]"
-            disabled={data.id === undefined}
+            disabled={goalDetail.id === undefined}
             onClick={handleAddTodo}
           >
             <PlusIcon size={20} />
@@ -100,8 +99,8 @@ export default function GoalBox({ data }: GoalBoxProps) {
           </div>
         ) : (
           <>
-            <ListBox title={t.allTodo.todo} mode="todo" goalId={data.id!} searchItems={searchTodoItems} />
-            <ListBox title={t.allTodo.done} mode="done" goalId={data.id!} searchItems={searchDoneItems} />
+            <ListBox title={t.allTodo.todo} mode="todo" goalId={goalDetail.id} searchItems={searchTodoItems} />
+            <ListBox title={t.allTodo.done} mode="done" goalId={goalDetail.id} searchItems={searchDoneItems} />
           </>
         )}
       </div>
@@ -110,9 +109,9 @@ export default function GoalBox({ data }: GoalBoxProps) {
 }
 
 interface GoalNameProps {
-  data: GoalDetailResponse;
+  goalDetail: GoalDetailResponse;
 }
-function GoalName({ data }: GoalNameProps) {
+function GoalName({ goalDetail }: GoalNameProps) {
   const router = useRouter();
 
   return (
@@ -121,15 +120,15 @@ function GoalName({ data }: GoalNameProps) {
         <div className="w-full max-w-[229px]">
           <button
             onClick={() => {
-              if (data.id === undefined) return;
-              router.push(`goal/${data.id}`);
+              if (goalDetail.id === undefined) return;
+              router.push(`goal/${goalDetail.id}`);
             }}
             className="font-base overflow-hidden text-left font-semibold text-ellipsis whitespace-nowrap text-gray-700"
           >
-            {data.title}
+            {goalDetail.title}
           </button>
         </div>
-        <Progressbar progress={data.progress ?? 0} />
+        <Progressbar progress={goalDetail.progress ?? 0} />
       </div>
     </div>
   );
@@ -171,6 +170,7 @@ function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
     return () => observer.disconnect();
   }, [searchItems, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  if (goalId === undefined) return null;
   return (
     <div
       className={`flex h-[324px] flex-1 flex-col gap-4 overflow-hidden rounded-[16px] ${bgColor} p-4 lg:rounded-[24px] lg:p-6`}

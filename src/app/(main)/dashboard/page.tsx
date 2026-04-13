@@ -6,6 +6,7 @@ import DashboardDetail from '@/features/dashboard/components/DashboardDetail';
 import { todoQueries, userQueries } from '@/shared/lib/query/queryKeys';
 import { DataBoundary } from '@/shared/components/ErrorSuspenseBoundary';
 import DashboardDetailSkeleton from '@/features/dashboard/components/DashboardDetailSkeleton';
+import { type CurrentUserResponse } from '@/shared/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,13 +23,13 @@ export default async function DashboardPage() {
     queryClient.prefetchQuery(userQueries.progress()),
     queryClient.prefetchQuery(todoQueries.list({ sort: 'LATEST', search: '', limit: 4 })),
   ]);
+  const initialUser = queryClient.getQueryData<CurrentUserResponse>(userQueries.current().queryKey);
 
   const dehydratedState = dehydrate(queryClient);
-
   return (
     <div className="flex w-full flex-col">
       <HydrationBoundary state={dehydratedState}>
-        <DashBoardSummary />
+        <DashBoardSummary initialUser={initialUser} />
       </HydrationBoundary>
 
       <DataBoundary suspenseFallback={<DashboardDetailSkeleton />}>
