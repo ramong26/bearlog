@@ -10,6 +10,7 @@ import { fetchTodos, type GetTodosParams, type GetTodoCalendarParams } from '../
 import { fetchUsers } from '../api/fetchUsers';
 import { authKeys, githubKeys, goalKeys, noteKeys, notificationKeys, tagKeys, todoKeys, userKeys } from './keyFactory';
 
+const DASHBOARD_STALE_TIME = 1000 * 60 * 5;
 // goal queries
 export const goalQueries = {
   list: (params?: GetGoalsParams) =>
@@ -31,6 +32,7 @@ export const todoQueries = {
     queryOptions({
       queryKey: todoKeys.list(params),
       queryFn: () => fetchTodos.getTodos(params),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   infiniteList: (params?: Omit<GetTodosParams, 'cursor'>) =>
@@ -39,12 +41,14 @@ export const todoQueries = {
       queryFn: ({ pageParam }) => fetchTodos.getTodos({ ...params, cursor: pageParam }),
       initialPageParam: undefined as number | undefined,
       getNextPageParam: (lastPage) => (lastPage.hasMore ? (lastPage.nextCursor ?? undefined) : undefined),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   detail: (todoId: number) =>
     queryOptions({
       queryKey: todoKeys.detail(todoId),
       queryFn: () => fetchTodos.getTodo(todoId),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   calendar: (params: GetTodoCalendarParams) =>
@@ -107,12 +111,14 @@ export const userQueries = {
     queryOptions({
       queryKey: userKeys.me(),
       queryFn: fetchUsers.getCurrentUser,
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   progress: () =>
     queryOptions({
       queryKey: userKeys.progress(),
       queryFn: fetchUsers.getUserProgress,
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   githubConnection: () =>
