@@ -2,11 +2,8 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 
 import DashBoardSummary from '@/features/dashboard/components/DashboardSummary';
 import DashboardDetail from '@/features/dashboard/components/DashboardDetail';
-import DashboardDetailSkeleton from '@/features/dashboard/components/DashboardDetailSkeleton';
 
-import { dashboardKeys } from '@/shared/lib/query/keyFactory';
-import { getDashboardSummary } from '@/features/dashboard/lib/getDashboardSummary';
-import { DataBoundary } from '@/shared/components/ErrorSuspenseBoundary';
+import { todoQueries, userQueries, goalQueries } from '@/shared/lib/query/queryKeys';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,22 +15,37 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: dashboardKeys.summary(),
-    queryFn: async () => (await getDashboardSummary()).data,
-  });
+  await Promise.all([
+    queryClient.prefetchQuery(userQueries.current()),
+    queryClient.prefetchQuery(userQueries.progress()),
+  ]);
+
+  const goals = await queryClient.fetchQuery(goalQueries.list());
+
+  await Promise.all(
+    (goals.goals ?? [])
+      .filter((goal) => goal.id != null)
+      .flatMap((goal) => [
+        queryClient.prefetchQuery(goalQueries.detail(goal.id!)),
+        queryClient.prefetchInfiniteQuery({
+          ...todoQueries.infiniteList({ goalId: goal.id!, done: false, limit: 10 }),
+          pages: 1,
+        }),
+        queryClient.prefetchInfiniteQuery({
+          ...todoQueries.infiniteList({ goalId: goal.id!, done: true, limit: 10 }),
+          pages: 1,
+        }),
+      ]),
+  );
 
   const dehydratedState = dehydrate(queryClient);
 
   return (
-    <div className="flex w-full flex-col">
-      <HydrationBoundary state={dehydratedState}>
+    <HydrationBoundary state={dehydratedState}>
+      <div className="flex w-full flex-col">
         <DashBoardSummary />
-      </HydrationBoundary>
-
-      <DataBoundary suspenseFallback={<DashboardDetailSkeleton />}>
         <DashboardDetail />
-      </DataBoundary>
-    </div>
+      </div>
+    </HydrationBoundary>
   );
 }

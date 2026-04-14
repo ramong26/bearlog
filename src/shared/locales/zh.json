@@ -92,7 +92,10 @@
     "editPlaceholder": "请输入目标标题",
     "calendarView": "日历视图",
     "addTodo": "添加待办",
-    "emptyTodo": "暂无待办事项，添加一个吧！"
+
+    "emptyTodo": "暂无待办事项，添加一个吧！",
+    "emptyTodoList": "暂无待办事项",
+    "emptyDoneList": "暂无已完成事项"
   },
   "todo": {
     "searchPlaceholder": "搜索待办事项",

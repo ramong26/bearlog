@@ -104,7 +104,7 @@ function GoalInfo({ goalDetail }: GoalInfoProps) {
   };
 
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-white xl:flex-1">
+    <div className="dark:bg-gray-750 flex items-center justify-between rounded-2xl bg-white xl:flex-1">
       <div className="flex items-center justify-center gap-4 py-5 pl-5 md:py-6 md:pl-6 lg:py-15 lg:pl-10">
         <Image
           src={isGithubGoal ? '/image/github-icon.png' : '/image/goal-todo.png'}
@@ -118,7 +118,9 @@ function GoalInfo({ goalDetail }: GoalInfoProps) {
               {goalDetail.title}
             </span>
             {isGithubGoal && (
-              <span className="rounded-full bg-[#F6F8FA] px-3 py-1 text-xs font-semibold text-gray-600">GitHub</span>
+              <span className="rounded-full bg-[#F6F8FA] px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                GitHub
+              </span>
             )}
           </div>
           {isGithubGoal && goalDetail.repositoryFullName && (

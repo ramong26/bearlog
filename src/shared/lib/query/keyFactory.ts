@@ -54,8 +54,3 @@ export const tagKeys = {
   all: ['tags'] as const,
   lists: () => [...tagKeys.all, 'list'] as const,
 };
-
-export const dashboardKeys = {
-  all: ['dashboard'] as const,
-  summary: () => [...dashboardKeys.all, 'summary'] as const,
-};

@@ -3,8 +3,9 @@
     "save": "저장하기",
     "cancel": "취소",
     "confirm": "확인",
-    "delete": "삭제",
-    "edit": "수정",
+
+    "delete": "삭제하기",
+    "edit": "수정하기",
     "close": "닫기",
     "loading": "로딩 중...",
     "search": "검색"
@@ -92,7 +93,9 @@
     "editPlaceholder": "목표 제목을 입력하세요",
     "calendarView": "캘린더 보기",
     "addTodo": "할 일 추가",
-    "emptyTodo": "할 일이 없습니다. 새로운 할 일을 추가해보세요!"
+    "emptyTodo": "할 일이 없습니다. 새로운 할 일을 추가해보세요!",
+    "emptyTodoList": "해야할 일이 아직 없어요",
+    "emptyDoneList": "완료한 일이 아직 없어요"
   },
   "todo": {
     "searchPlaceholder": "할 일을 검색해주세요",
@@ -181,7 +184,7 @@
     "withdrawFail": "회원 탈퇴에 실패했습니다. 다시 시도해주세요."
   },
   "modal": {
-    "deleteGoalTitle": "목표를 삭제하시겠어요?",
+    "deleteGoalTitle": "정말 삭제하시겠어요?",
     "deleteGoalDesc": "삭제된 목표는 복구할 수 없습니다.",
     "deleteNoteTitle": "노트를 삭제하시겠어요?",
     "deleteNoteDesc": "삭제된 노트는 복구할 수 없습니다.",

@@ -59,7 +59,7 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
             <div className="flex gap-2">
               <Button
                 variant="cancel"
-                className="rounded-full bg-gray-100 p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px]"
+                className="rounded-full bg-gray-100 p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px] dark:bg-gray-700"
               >
                 <CalendarIcon size={20} color="#737373" />
                 <Link href={`/calendar`} className="hidden w-full w-max text-sm font-semibold text-gray-500 md:block">
@@ -78,13 +78,14 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
             </div>
           }
         />
-        <section className="rounded-2xl bg-white px-[28px] py-[32px]">
-          <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
+
+        <section className="dark:bg-gray-750 h-144 w-160 rounded-2xl bg-white px-7 py-8">
+          <div className="flex h-full flex-col gap-4 overflow-y-auto">
             {goalDetail?.todoList && goalDetail?.todoList.length > 0 ? (
               goalDetail.todoList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="todo" />)
             ) : (
-              <div className="flex min-h-[120px] items-center justify-center">
-                <Empty>{t.goal.emptyTodo}</Empty>
+              <div className="flex flex-1 items-center justify-center">
+                <Empty>{t.goal.emptyTodoList}</Empty>
               </div>
             )}
           </div>
@@ -92,13 +93,14 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-[10px]">
         <PageSubTitle subTitle="DONE" textClassName="font-semibold" className="py-[6px]" />
-        <section className="rounded-2xl bg-white px-[28px] py-[32px]">
-          <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
+
+        <section className="dark:bg-gray-750 h-144 w-160 rounded-2xl bg-white px-7 py-8">
+          <div className="flex h-full flex-col gap-4 overflow-y-auto">
             {goalDetail?.doneList && goalDetail?.doneList.length > 0 ? (
               goalDetail.doneList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="done" />)
             ) : (
-              <div className="flex min-h-[120px] items-center justify-center">
-                <Empty>{t.goal.emptyTodo}</Empty>
+              <div className="flex flex-1 items-center justify-center">
+                <Empty>{t.goal.emptyDoneList}</Empty>
               </div>
             )}
           </div>

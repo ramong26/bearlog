@@ -92,7 +92,9 @@
     "editPlaceholder": "Enter goal title",
     "calendarView": "Calendar View",
     "addTodo": "Add To Do",
-    "emptyTodo": "No to dos. Add a new one!"
+    "emptyTodo": "No to dos. Add a new one!",
+    "emptyTodoList": "No tasks yet",
+    "emptyDoneList": "No completed tasks yet"
   },
   "todo": {
     "searchPlaceholder": "Search to dos",

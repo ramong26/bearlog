@@ -92,7 +92,9 @@
     "editPlaceholder": "目標のタイトルを入力してください",
     "calendarView": "カレンダー表示",
     "addTodo": "タスクを追加",
-    "emptyTodo": "タスクがありません。新しいタスクを追加してください！"
+    "emptyTodo": "タスクがありません。新しいタスクを追加してください！",
+    "emptyTodoList": "タスクがまだありません",
+    "emptyDoneList": "完了したタスクがまだありません"
   },
   "todo": {
     "searchPlaceholder": "タスクを検索してください",
