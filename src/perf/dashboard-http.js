@@ -5,6 +5,7 @@ const BASE_URL = (__ENV.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '')
 const TARGET_MODE = (__ENV.TARGET_MODE || 'proxy').toLowerCase();
 const DASHBOARD_MODE = (__ENV.DASHBOARD_MODE || 'MANUAL').toUpperCase();
 const APPLY_MODE_FILTER = (__ENV.APPLY_MODE_FILTER || 'false').toLowerCase() === 'true';
+const SUMMARY_FETCH_MODE = (__ENV.SUMMARY_FETCH_MODE || 'legacy').toLowerCase();
 const AUTH_COOKIE = __ENV.AUTH_COOKIE || '';
 const ACCESS_TOKEN = __ENV.ACCESS_TOKEN || '';
 const REFRESH_TOKEN = __ENV.REFRESH_TOKEN || '';
@@ -69,36 +70,64 @@ export const options = {
 
 export function dashboardApiLoad() {
   const headers = buildHeaders();
+  const useSummaryApi = SUMMARY_FETCH_MODE === 'summary-api' && TARGET_MODE === 'proxy';
+  let goalsRes = null;
+  let recentTodos = [];
 
-  // Initial requests fired together, similar to dashboard first render.
-  const bootstrapResponses = http.batch([
-    ['GET', buildUrl('/api/v1/users/me'), null, requestParams(headers, 'dashboard-current-user')],
-    ['GET', buildUrl('/api/v1/users/me/progress'), null, requestParams(headers, 'dashboard-progress')],
-    ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
-    [
-      'GET',
-      buildUrl('/api/v1/todos', { sort: 'LATEST', search: '', limit: RECENT_TODO_LIMIT }),
-      null,
-      requestParams(headers, 'dashboard-recent-todos'),
-    ],
-  ]);
+  if (useSummaryApi) {
+    // New path: dashboard summary BFF endpoint + goals list.
+    const [summaryRes, goalsResponse] = http.batch([
+      ['GET', buildAppUrl('/api/dashboard/summary'), null, requestParams(headers, 'dashboard-summary-api')],
+      ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
+    ]);
 
-  const [currentUserRes, progressRes, goalsRes, recentTodosRes] = bootstrapResponses;
+    goalsRes = goalsResponse;
 
-  check(currentUserRes, {
-    'current user status is 200': (response) => response.status === 200,
-  });
-  check(progressRes, {
-    'progress status is 200': (response) => response.status === 200,
-  });
-  check(goalsRes, {
-    'goals status is 200': (response) => response.status === 200,
-  });
-  check(recentTodosRes, {
-    'recent todos status is 200': (response) => response.status === 200,
-  });
+    check(summaryRes, {
+      'dashboard summary api status is 200': (response) => response.status === 200,
+    });
+    check(goalsRes, {
+      'goals status is 200': (response) => response.status === 200,
+    });
 
-  if (goalsRes.status !== 200 && recentTodosRes.status !== 200) {
+    if (summaryRes.status === 200) {
+      recentTodos = parseJson(summaryRes)?.data?.todos ?? [];
+    }
+  } else {
+    // Legacy path: user/progress/recent-todo requests are sent independently.
+    const [currentUserRes, progressRes, goalsResponse, recentTodosRes] = http.batch([
+      ['GET', buildUrl('/api/v1/users/me'), null, requestParams(headers, 'dashboard-current-user')],
+      ['GET', buildUrl('/api/v1/users/me/progress'), null, requestParams(headers, 'dashboard-progress')],
+      ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
+      [
+        'GET',
+        buildUrl('/api/v1/todos', { sort: 'LATEST', search: '', limit: RECENT_TODO_LIMIT }),
+        null,
+        requestParams(headers, 'dashboard-recent-todos'),
+      ],
+    ]);
+
+    goalsRes = goalsResponse;
+
+    check(currentUserRes, {
+      'current user status is 200': (response) => response.status === 200,
+    });
+    check(progressRes, {
+      'progress status is 200': (response) => response.status === 200,
+    });
+    check(goalsRes, {
+      'goals status is 200': (response) => response.status === 200,
+    });
+    check(recentTodosRes, {
+      'recent todos status is 200': (response) => response.status === 200,
+    });
+
+    if (recentTodosRes.status === 200) {
+      recentTodos = parseJson(recentTodosRes)?.todos ?? [];
+    }
+  }
+
+  if (goalsRes.status !== 200 && recentTodos.length === 0) {
     sleep(SLEEP_SECONDS);
     return;
   }
@@ -154,12 +183,9 @@ export function dashboardApiLoad() {
     }
   }
 
-  if (recentTodosRes.status === 200) {
-    // Recent todo cards also call detail API per item.
-    const recentTodos = parseJson(recentTodosRes)?.todos ?? [];
-    for (const todoId of recentTodos.map((todo) => todo?.id).filter((id) => Number.isFinite(id) && id > 0)) {
-      todoDetailIds.add(todoId);
-    }
+  // Recent todo cards also call detail API per item.
+  for (const todoId of recentTodos.map((todo) => todo?.id).filter((id) => Number.isFinite(id) && id > 0)) {
+    todoDetailIds.add(todoId);
   }
 
   const todoDetailRequests = Array.from(todoDetailIds).map((todoId) => [
@@ -233,6 +259,11 @@ function buildUrl(pathname, params) {
   return queryString ? `${BASE_URL}${normalizedPath}?${queryString}` : `${BASE_URL}${normalizedPath}`;
 }
 
+function buildAppUrl(pathname, params) {
+  const queryString = toQueryString(params);
+  return queryString ? `${BASE_URL}${pathname}?${queryString}` : `${BASE_URL}${pathname}`;
+}
+
 function toProxyPath(pathname) {
   // /api/v1/* -> /api/proxy/* mapping for Next.js BFF route.
   return pathname.replace(/^\/api\/v1\/?/, '/api/proxy/');
@@ -245,6 +276,7 @@ function requestParams(headers, name) {
       name,
       dashboard_mode: DASHBOARD_MODE,
       target_mode: TARGET_MODE,
+      summary_fetch_mode: SUMMARY_FETCH_MODE,
     },
   };
 }

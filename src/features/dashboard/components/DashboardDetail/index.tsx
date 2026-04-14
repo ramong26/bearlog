@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import Empty from '@/shared/components/Empty';

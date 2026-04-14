@@ -8,21 +8,34 @@ import { fetchNotifications } from '../api/fetchNotifications';
 import { fetchTags } from '../api/fetchTags';
 import { fetchTodos, type GetTodosParams, type GetTodoCalendarParams } from '../api/fetchTodos';
 import { fetchUsers } from '../api/fetchUsers';
+import {
+  authKeys,
+  dashboardKeys,
+  githubKeys,
+  goalKeys,
+  noteKeys,
+  notificationKeys,
+  tagKeys,
+  todoKeys,
+  userKeys,
+} from './keyFactory';
+import { fetchDashboard } from '../api/fetchDashboard';
 
-import { authKeys, githubKeys, goalKeys, noteKeys, notificationKeys, tagKeys, todoKeys, userKeys } from './keyFactory';
-
+const DASHBOARD_STALE_TIME = 1000 * 60 * 5;
 // goal queries
 export const goalQueries = {
   list: (params?: GetGoalsParams) =>
     queryOptions({
       queryKey: goalKeys.list(params),
       queryFn: () => fetchGoals.getGoals(params),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   detail: (goalId: number) =>
     queryOptions({
       queryKey: goalKeys.detail(goalId),
       queryFn: () => fetchGoals.getGoal(goalId),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 };
 
@@ -32,6 +45,7 @@ export const todoQueries = {
     queryOptions({
       queryKey: todoKeys.list(params),
       queryFn: () => fetchTodos.getTodos(params),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   infiniteList: (params?: Omit<GetTodosParams, 'cursor'>) =>
@@ -40,12 +54,14 @@ export const todoQueries = {
       queryFn: ({ pageParam }) => fetchTodos.getTodos({ ...params, cursor: pageParam }),
       initialPageParam: undefined as number | undefined,
       getNextPageParam: (lastPage) => (lastPage.hasMore ? (lastPage.nextCursor ?? undefined) : undefined),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   detail: (todoId: number) =>
     queryOptions({
       queryKey: todoKeys.detail(todoId),
       queryFn: () => fetchTodos.getTodo(todoId),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   calendar: (params: GetTodoCalendarParams) =>
@@ -99,10 +115,6 @@ export const githubQueries = {
     queryOptions({
       queryKey: githubKeys.repositories(),
       queryFn: fetchGithubIntegrations.getRepositories,
-
-      staleTime: 5 * 60 * 1000,
-      retry: false,
-      refetchOnWindowFocus: false,
     }),
 };
 
@@ -112,12 +124,14 @@ export const userQueries = {
     queryOptions({
       queryKey: userKeys.me(),
       queryFn: fetchUsers.getCurrentUser,
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   progress: () =>
     queryOptions({
       queryKey: userKeys.progress(),
       queryFn: fetchUsers.getUserProgress,
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 
   githubConnection: () =>
@@ -142,5 +156,15 @@ export const tagQueries = {
     queryOptions({
       queryKey: tagKeys.lists(),
       queryFn: fetchTags.getTags,
+    }),
+};
+
+// dashboard queries
+export const dashboardQueries = {
+  summary: () =>
+    queryOptions({
+      queryKey: dashboardKeys.summary(),
+      queryFn: () => fetchDashboard.getDashboardSummary(),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 };
