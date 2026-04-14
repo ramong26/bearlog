@@ -29,11 +29,6 @@ export default function DashBoardSummary() {
 
   const { data: dashboardSummaryData, isFetched: isDashboardSummaryFetched } = useQuery({
     ...dashboardQueries.summary(),
-    initialData: {
-      user: null,
-      progress: null,
-      todos: [],
-    },
   });
 
   const { openModal } = useModalStore();
@@ -126,11 +121,12 @@ export default function DashBoardSummary() {
 }
 
 interface RecentPostCardProps {
-  dashboardSummaryData: DashboardSummaryResponse;
+  dashboardSummaryData: DashboardSummaryResponse | undefined;
 }
 function RecentPostCard({ dashboardSummaryData }: RecentPostCardProps) {
   const { t } = useLanguage();
 
+  if (!dashboardSummaryData || dashboardSummaryData.todos.length === 0) return null;
   return (
     <article className="dark:bg-gray-850 flex h-[187px] h-fit w-full min-w-0 flex-col gap-[6px] rounded-[40px] bg-white px-4 py-[18px] md:h-[229px] md:p-4 lg:h-[256px] lg:p-8">
       {dashboardSummaryData?.todos?.length > 0 ? (
@@ -145,12 +141,13 @@ function RecentPostCard({ dashboardSummaryData }: RecentPostCardProps) {
 }
 
 interface CurrentProgressCardProps {
-  dashboardSummaryData: DashboardSummaryResponse;
+  dashboardSummaryData: DashboardSummaryResponse | undefined;
 }
 function CurrentProgressCard({ dashboardSummaryData }: CurrentProgressCardProps) {
   const { t } = useLanguage();
   const mode = useTodoModeStore((state) => state.mode);
 
+  if (!dashboardSummaryData || dashboardSummaryData.progress === null) return null;
   return (
     <article className="bg-bearlog-500 relative h-[187px] w-full rounded-[40px] shadow-[0_10px_40px_0_rgba(2,202,181,0.40)] md:h-[229px] lg:h-[256px]">
       <div className="absolute right-0 bottom-0">
