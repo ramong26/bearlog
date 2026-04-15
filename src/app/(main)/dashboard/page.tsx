@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
   const queryClient = new QueryClient();
 
-  const initialSummaryData = await queryClient.ensureQueryData(dashboardQueries.summary());
+  const initialSummaryData = await queryClient.fetchQuery(dashboardQueries.summary());
   const dehydratedState = dehydrate(queryClient);
 
   return (

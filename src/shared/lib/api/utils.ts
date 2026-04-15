@@ -20,6 +20,7 @@ export class ApiError extends Error {
 }
 const isClient = typeof window !== 'undefined';
 const ACCESS_TOKEN_COOKIE = 'accessToken';
+const serverApiBaseUrl = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? '').replace(/\/+$/, '');
 
 // 서버에서 쿠키를 읽어오는 함수
 const getServerAccessToken = async () => {
@@ -55,9 +56,11 @@ export const apiRequest = async <TResponse, TBody = unknown>(
   const cleanUrl = isClient ? url.replace(/^\/api\/v1\/?/, '/') : url;
 
   // 클라이언트 요청이면 프록시 경로를 사용하고, 서버 요청이면 API_BASE_URL을 사용
-  const fullUrl = isClient
-    ? `/api/proxy${cleanUrl}${queryString}`
-    : `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}${queryString}`;
+  if (!isClient && !serverApiBaseUrl) {
+    throw new ApiError(500, 'API_BASE_URL is not defined in environment variables');
+  }
+
+  const fullUrl = isClient ? `/api/proxy${cleanUrl}${queryString}` : `${serverApiBaseUrl}${url}${queryString}`;
 
   // 서버 요청이면 쿠키에서 액세스 토큰을 가져와서 Authorization 헤더에 추가
   const requestHeaders = new Headers({
