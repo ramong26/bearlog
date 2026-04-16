@@ -18,24 +18,49 @@ import { goalQueries, userQueries } from '@/shared/lib/query/queryKeys';
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useGithubRepoConnectModal } from '@/shared/hooks/useGithubRepoConnectModal';
+import TabChangeMode from '@/shared/components/TabChangeMode';
+import { TodoMode, useTodoModeStore } from '@/shared/stores/useTodoModeStore';
 
 interface GoalSummaryProps {
   goalId: number;
 }
-
 function GoalSummary({ goalId }: GoalSummaryProps) {
   const breakpoint = useBreakpoint();
   const { t } = useLanguage();
+  const mode = useTodoModeStore((state) => state.mode);
+  const setMode = useTodoModeStore((state) => state.setMode);
 
-  const { data: user } = useQuery(userQueries.current());
+  const { data: user, isFetched: isUserFetched } = useQuery(userQueries.current());
   const { data: goalDetail } = useQuery({
     ...goalQueries.detail(goalId),
     enabled: !!goalId,
   });
 
+  const handleModeChange = (nextMode: TodoMode) => {
+    setMode(nextMode);
+  };
+
+  useGithubRepoConnectModal({
+    isConnectionFetched: isUserFetched,
+    isGithubConnected: user?.githubConnected,
+  });
+
   return (
     <div className="flex flex-col gap-10">
-      {breakpoint !== 'mobile' && <PageHeader title={`${user?.nickname}${t.goal.title}`} className="pl-2" />}
+      <div className="flex items-center justify-between">
+        {breakpoint !== 'mobile' && (
+          <div className="flex flex-col gap-2">
+            <PageHeader title={user?.nickname ? `${user.nickname}${t.goal.title}` : t.goal.title} className="pl-2" />
+            {mode === 'GITHUB' && (
+              <span className="text-xl text-gray-400 transition-all duration-200">{t.dashboard.githubModeDesc}</span>
+            )}
+          </div>
+        )}
+        <div className="flex shrink-0 justify-end md:w-fit">
+          <TabChangeMode mode={mode} onModeChange={handleModeChange} />
+        </div>
+      </div>
       <section className="flex flex-col gap-6 xl:flex-row xl:gap-8">
         <GoalInfo goalDetail={goalDetail} />
 
@@ -53,7 +78,6 @@ export default memo(GoalSummary);
 interface GoalInfoProps {
   goalDetail: GoalDetailResponse | undefined;
 }
-
 function GoalInfo({ goalDetail }: GoalInfoProps) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -104,7 +128,7 @@ function GoalInfo({ goalDetail }: GoalInfoProps) {
   };
 
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-white dark:bg-gray-750 xl:flex-1">
+    <div className="dark:bg-gray-750 flex items-center justify-between rounded-2xl bg-white xl:flex-1">
       <div className="flex items-center justify-center gap-4 py-5 pl-5 md:py-6 md:pl-6 lg:py-15 lg:pl-10">
         <Image
           src={isGithubGoal ? '/image/github-icon.png' : '/image/goal-todo.png'}
@@ -118,7 +142,9 @@ function GoalInfo({ goalDetail }: GoalInfoProps) {
               {goalDetail.title}
             </span>
             {isGithubGoal && (
-              <span className="rounded-full bg-[#F6F8FA] px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">GitHub</span>
+              <span className="rounded-full bg-[#F6F8FA] px-3 py-1 text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                GitHub
+              </span>
             )}
           </div>
           {isGithubGoal && goalDetail.repositoryFullName && (

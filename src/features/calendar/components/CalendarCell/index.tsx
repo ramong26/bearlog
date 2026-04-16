@@ -23,7 +23,7 @@ export default function CalendarCell({ day, todos, isLastRow, isSelected, onDayC
   return (
     <div
       className={clsx(
-        'border-border-secondary relative h-20 overflow-hidden p-1.5 md:h-28 md:p-2 lg:h-35.5',
+        'border-border-secondary dark:border-[#585858] relative h-20 overflow-hidden p-1.5 md:h-28 md:p-2 lg:h-35.5',
         !isLastRow && 'border-b',
         'border-r nth-[7n]:border-r-0',
       )}
@@ -46,7 +46,7 @@ export default function CalendarCell({ day, todos, isLastRow, isSelected, onDayC
             <span
               className={clsx(
                 'flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-xs font-semibold',
-                isSelected ? 'bg-bearlog-500 text-white' : 'text-gray-600',
+                isSelected ? 'bg-bearlog-500 text-white' : 'text-gray-600 dark:text-gray-500',
               )}
             >
               {day}

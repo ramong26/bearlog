@@ -129,7 +129,7 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
               onConfirm(date);
               setOpen(false);
             }}
-            className="bg-bearlog-500 flex flex-1 items-center justify-center rounded-full py-[10px] text-sm font-semibold text-white"
+            className="bg-bearlog-500 flex flex-1 items-center justify-center rounded-full py-[10px] text-sm font-semibold text-white dark:text-gray-850"
           >
             {t.common.confirm}
           </Button>

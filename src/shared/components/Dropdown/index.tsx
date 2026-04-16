@@ -130,7 +130,7 @@ export function DropdownList({ items, onSelectItem, className }: DropdownListPro
   return (
     <div
       className={twMerge(
-        clsx('max-h-50 w-full overflow-y-auto rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
+        clsx('max-h-64 w-full overflow-y-auto rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
       )}
     >
       {items.map((item) => (
@@ -150,7 +150,7 @@ interface DropdownItemProps {
 
 export function DropdownItem({ item, onSelectItem }: DropdownItemProps) {
   return (
-    <div className="flex w-full bg-white p-1.5 dark:bg-gray-850">
+    <div className="flex w-full bg-white p-1.5 dark:bg-gray-750">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -159,7 +159,7 @@ export function DropdownItem({ item, onSelectItem }: DropdownItemProps) {
         }}
         className={twMerge(clsx('flex w-full cursor-pointer'))}
       >
-        <div className={twMerge(clsx('hover:bg-bearlog-500/20 w-full rounded-xl p-2 text-left'))}>
+        <div className={twMerge(clsx('hover:bg-bearlog-500/60 w-full rounded-xl p-2 text-left'))}>
           <span className="text-sm leading-6 font-medium tracking-[-0.48px] text-[#333] md:text-base dark:text-gray-100">
             {item.label}
           </span>

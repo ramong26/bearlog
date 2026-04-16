@@ -3,25 +3,15 @@
 import { Suspense } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-
 import Empty from '../Empty';
+import ErrorFallbackUI from '../ErrorFallbackUI';
 
-const IS_DEV = process.env.NODE_ENV === 'development';
 
-function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+function ErrorFallback({ resetErrorBoundary }: FallbackProps) {
   return (
-    <Empty>
-      <p className="mb-4 text-sm text-gray-600">
-        {IS_DEV && error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'}
-      </p>
-      <button
-        type="button"
-        onClick={resetErrorBoundary}
-        className="w-full rounded bg-blue-500 py-2 font-semibold text-white hover:bg-blue-600"
-      >
-        다시 시도
-      </button>
-    </Empty>
+    <div className="flex min-h-[300px] items-center justify-center">
+      <ErrorFallbackUI onRetry={resetErrorBoundary} />
+    </div>
   );
 }
 

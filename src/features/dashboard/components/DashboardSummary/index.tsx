@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRef, useEffect } from 'react';
 import { ChevronRightIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -11,14 +10,12 @@ import PageSubTitle from '@/shared/components/PageSubTitle';
 import ProgressCircle from '@/shared/components/ProgressCircle';
 import TabChangeMode from '@/shared/components/TabChangeMode';
 import TaskCardWrapper from '../TaskCardWrapper';
-import GithubRepoConnectModal from '@/shared/components/Modal/GithubRepoConnectModal';
 
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
-import { dashboardQueries, goalQueries } from '@/shared/lib/query/queryKeys';
-import { useModalStore } from '@/shared/stores/useModalStore';
+import { useGithubRepoConnectModal } from '@/shared/hooks/useGithubRepoConnectModal';
+import { dashboardQueries } from '@/shared/lib/query/queryKeys';
 import { useTodoModeStore, TodoMode } from '@/shared/stores/useTodoModeStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
-import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
 import { DashboardSummaryResponse } from '@/shared/types/api/schemas/api.process';
 
 interface DashboardSummaryProps {
@@ -35,56 +32,15 @@ export default function DashBoardSummary({ initialSummaryData }: DashboardSummar
     ...dashboardQueries.summary(),
     initialData: initialSummaryData,
   });
-  const { data: goals, isFetched: isGoalListFetched } = useQuery(goalQueries.list());
-
-  const { openModal } = useModalStore();
-
-  const githubGoals = goals?.goals?.filter((goal) => goal.source === 'GITHUB') ?? [];
-  const isGithubDisconnectedSession =
-    typeof window !== 'undefined' && window.sessionStorage.getItem(GITHUB_DISCONNECTED_SESSION_KEY) === 'true';
-
-  const githubModalOpenedRef = useRef(false);
 
   const handleModeChange = (nextMode: TodoMode) => {
     setMode(nextMode);
   };
 
-  useEffect(() => {
-    if (mode !== 'GITHUB') {
-      githubModalOpenedRef.current = false;
-      return;
-    }
-
-    if (!isDashboardSummaryFetched) {
-      return;
-    }
-    if (dashboardSummaryData?.user?.githubConnected && !isGoalListFetched) {
-      return;
-    }
-
-    const shouldOpenConnectModal =
-      isGithubDisconnectedSession ||
-      !dashboardSummaryData?.user?.githubConnected ||
-      (dashboardSummaryData?.user?.githubConnected && isDashboardSummaryFetched && githubGoals.length === 0);
-
-    if (!shouldOpenConnectModal) {
-      githubModalOpenedRef.current = false;
-      return;
-    }
-
-    if (!githubModalOpenedRef.current) {
-      githubModalOpenedRef.current = true;
-      openModal(<GithubRepoConnectModal />, undefined, 'bottom');
-    }
-  }, [
-    mode,
-    isDashboardSummaryFetched,
-    isGoalListFetched,
-    githubGoals.length,
-    openModal,
-    dashboardSummaryData?.user?.githubConnected,
-    isGithubDisconnectedSession,
-  ]);
+  useGithubRepoConnectModal({
+    isConnectionFetched: isDashboardSummaryFetched,
+    isGithubConnected: dashboardSummaryData?.user?.githubConnected,
+  });
 
   return (
     <>

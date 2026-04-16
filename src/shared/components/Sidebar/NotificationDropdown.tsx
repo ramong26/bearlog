@@ -22,7 +22,7 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const [dropdownPos, setDropdownPos] = useState<{ top?: number; bottom?: number; left: number }>({ left: 0 });
   const queryClient = useQueryClient();
   const { data: notifications = [] } = useQuery(notificationQueries.list());
 
@@ -49,10 +49,17 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       const DROPDOWN_WIDTH = 320;
+      const DROPDOWN_MAX_HEIGHT = 400;
+      const MARGIN = 8;
+
       if (placement === 'bottom') {
-        setDropdownPos({ top: rect.bottom + 8, left: Math.max(8, rect.right - DROPDOWN_WIDTH) });
+        setDropdownPos({ top: rect.bottom + MARGIN, left: Math.max(MARGIN, rect.right - DROPDOWN_WIDTH) });
       } else {
-        setDropdownPos({ top: rect.top, left: rect.right + 8 });
+        if (rect.top + DROPDOWN_MAX_HEIGHT + MARGIN > window.innerHeight) {
+          setDropdownPos({ bottom: window.innerHeight - rect.top + MARGIN, left: rect.right + MARGIN });
+        } else {
+          setDropdownPos({ top: rect.top, left: rect.right + MARGIN });
+        }
       }
     }
   }, [isOpen, placement]);
@@ -80,13 +87,13 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
         createPortal(
           <div
             ref={dropdownRef}
-            style={{ top: dropdownPos.top, left: dropdownPos.left }}
-            className="fixed z-50 w-[320px] rounded-2xl border border-gray-100 bg-white shadow-xl"
+            style={{ top: dropdownPos.top, bottom: dropdownPos.bottom, left: dropdownPos.left }}
+            className="fixed z-50 w-[320px] rounded-2xl border border-gray-100 dark:border-gray-850 bg-white dark:bg-gray-850 shadow-xl"
           >
             <div className="flex items-center justify-between px-5 py-4">
-              <span className="text-base font-semibold text-gray-800">{t.notification.title}</span>
+              <span className="text-base font-semibold text-gray-800 dark:text-white">{t.notification.title}</span>
               {hasUnread && (
-                <button onClick={handleMarkAllRead} className="text-bearlog-600 text-sm font-medium hover:underline">
+                <button onClick={handleMarkAllRead} className="text-bearlog-500 text-sm font-medium hover:underline">
                   {t.notification.markAllRead}
                 </button>
               )}
@@ -100,16 +107,14 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
                   <li
                     key={notification.id}
                     onClick={() => !notification.isRead && markAsRead(notification.id)}
-                    className={`flex cursor-pointer items-start gap-3 px-5 py-4 transition-colors hover:bg-gray-50 ${
-                      !notification.isRead ? 'bg-gray-50/50' : ''
-                    }`}
+                    className={`flex cursor-pointer items-start gap-3 px-5 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${!notification.isRead ? 'bg-gray-50/50 dark:bg-gray-800/50' : ''}`}
                   >
                     <div className="mt-2 shrink-0">
                       {!notification.isRead && <div className="bg-bearlog-500 h-2 w-2 rounded-full" />}
                       {notification.isRead && <div className="h-2 w-2" />}
                     </div>
                     <div className="flex flex-1 flex-col gap-1">
-                      <p className="text-sm leading-snug text-gray-800">{notification.message}</p>
+                      <p className="text-sm leading-snug text-gray-800 dark:text-white">{notification.message}</p>
                       <span className="text-xs text-gray-400">{getRelativeTime(notification.createdAt)}</span>
                     </div>
                   </li>
