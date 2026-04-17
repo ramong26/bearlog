@@ -23,7 +23,7 @@ export default function EditorTitle({ title, onChange, readOnly = false }: Edito
         maxLength={30}
         placeholder={t.note.titlePlaceholder}
         className={clsx(
-          'min-w-0 flex-1 border-none p-0 text-left text-slate-700 dark:text-white dark:placeholder:text-[#BBBBBB] outline-none',
+          'w-full border-none p-0 text-left text-slate-700 dark:text-white placeholder:text-text-muted outline-none',
           'text-base font-semibold',
           'md:text-2xl md:font-semibold',
           readOnly && 'cursor-default',

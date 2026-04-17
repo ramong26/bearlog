@@ -2,7 +2,6 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 
 import PageHeader from '@/shared/components/PageHeader';
 import Input from '@/shared/components/Input';
@@ -50,7 +49,7 @@ export default function MyPageForm() {
   const { mutate: disconnectGithub, isPending: isDisconnectingGithub } = useDeleteGithubConnection();
   const { openModal } = useModalStore();
   const { showToast } = useToastStore();
-  const router = useRouter();
+
   const isLocalLogin = user?.loginProvider === 'LOCAL';
 
   const isGithubDisconnectedSession =
@@ -116,11 +115,17 @@ export default function MyPageForm() {
         onConfirm={async (password) => {
           try {
             await fetchUsers.deleteCurrentUser(password ? { password } : undefined);
-            router.push('/login');
           } catch (error) {
             console.error('Failed to delete account:', error);
             showToast(t.mypage.withdrawFail, 'fail');
+            return;
           }
+          try {
+            await fetch('/api/clear-session', { method: 'POST' });
+          } catch (e) {
+            console.error('Failed to clear session:', e);
+          }
+          window.location.replace('/login');
         }}
       />,
     );
