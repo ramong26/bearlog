@@ -170,4 +170,11 @@ export const dashboardQueries = {
       queryFn: () => fetchDashboard.getDashboardSummary(),
       staleTime: DASHBOARD_STALE_TIME,
     }),
+
+  detailTodos: () =>
+    queryOptions({
+      queryKey: dashboardKeys.detailTodos(),
+      queryFn: () => fetchDashboard.getDashboardDetailTodos(),
+      staleTime: DASHBOARD_STALE_TIME,
+    }),
 };

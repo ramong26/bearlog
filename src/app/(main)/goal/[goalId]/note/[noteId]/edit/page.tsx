@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { noteQueries, goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { noteQueries, goalQueries, todoQueries } from '@/shared/lib/query/queryFunction';
 import NoteEditClient from '@/features/note/components/NoteEditClient';
 import { notFound } from 'next/navigation';
 

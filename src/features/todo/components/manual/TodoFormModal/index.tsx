@@ -18,7 +18,7 @@ import TagInput from '../shared/TagInput';
 
 import { ApiError, PatchTodoRequest, PostTodoRequest } from '@/shared/lib/api';
 import { usePatchTodo, usePostTodo } from '@/shared/lib/query/mutations';
-import { goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries, todoQueries } from '@/shared/lib/query/queryFunction';
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { formatDateForAPI } from '@/shared/utils/utils';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -171,14 +171,16 @@ export default function TodoFormModal({ mode, todo, goalDetailId }: TodoFormModa
     <form
       onSubmit={handleSubmit(onSubmit)}
       className={clsx(
-        'no-scrollbar flex w-full flex-col bg-white dark:bg-gray-850 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)]',
+        'no-scrollbar dark:bg-gray-850 flex w-full flex-col bg-white shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)]',
         'gap-3 rounded-t-[32px] p-6',
         'max-h-[90vh] overflow-y-auto',
         'md:w-[488px] md:gap-4 md:rounded-[40px] md:p-8',
       )}
     >
       <div className="mb-1 flex items-center justify-between md:mb-4">
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-white">{isEditMode ? t.todo.editTitle : t.todo.createTitle}</h1>
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
+          {isEditMode ? t.todo.editTitle : t.todo.createTitle}
+        </h1>
         <button
           type="button"
           className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
@@ -205,7 +207,7 @@ export default function TodoFormModal({ mode, todo, goalDetailId }: TodoFormModa
           autoFocus
           {...register('title', { required: t.todo.titleRequired })}
           placeholder={t.todo.titlePlaceholder}
-          className="h-11 rounded-xl border-gray-300 dark:border-[#7E7E7E] dark:bg-gray-850 dark:text-gray-100 dark:placeholder:text-gray-400 p-3 text-sm font-normal text-[#333] placeholder:text-gray-500 md:h-14 md:rounded-2xl md:p-4 md:text-base"
+          className="dark:bg-gray-850 h-11 rounded-xl border-gray-300 p-3 text-sm font-normal text-[#333] placeholder:text-gray-500 md:h-14 md:rounded-2xl md:p-4 md:text-base dark:border-[#7E7E7E] dark:text-gray-100 dark:placeholder:text-gray-400"
         />
         {errors.title && <p className="px-1 text-xs text-red-500 md:text-sm">{errors.title.message}</p>}
       </FormField>
@@ -271,13 +273,18 @@ export default function TodoFormModal({ mode, todo, goalDetailId }: TodoFormModa
         <Button
           type="button"
           variant="tertiary"
-          className="h-12 w-full border border-gray-300 dark:border-[#7E7E7E] text-gray-500 dark:text-gray-500 md:h-14"
+          className="h-12 w-full border border-gray-300 text-gray-500 md:h-14 dark:border-[#7E7E7E] dark:text-gray-500"
           onClick={closeModal}
           disabled={isSubmitting}
         >
           {t.modal.cancel}
         </Button>
-        <Button type="submit" variant="primary" className="h-12 w-full dark:text-[#2F2F2F] dark:disabled:bg-[#8C8C8C] md:h-14" disabled={isSubmitting || isFormIncomplete}>
+        <Button
+          type="submit"
+          variant="primary"
+          className="h-12 w-full md:h-14 dark:text-[#2F2F2F] dark:disabled:bg-[#8C8C8C]"
+          disabled={isSubmitting || isFormIncomplete}
+        >
           {t.modal.confirm}
         </Button>
       </div>

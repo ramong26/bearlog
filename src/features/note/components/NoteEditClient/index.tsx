@@ -5,7 +5,7 @@ import NoteEditor from '@/features/note/components/NoteEditor';
 import Button from '@/shared/components/Button';
 import { useCallback, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { noteQueries, goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { noteQueries, goalQueries, todoQueries } from '@/shared/lib/query/queryFunction';
 import { useDraftNote } from '@/features/note/hooks/useDraftNote';
 import { useDraftNoteRestore } from '@/features/note/hooks/useDraftNoteRestore';
 import DraftNoteToast from '@/features/note/components/DraftNoteToast';

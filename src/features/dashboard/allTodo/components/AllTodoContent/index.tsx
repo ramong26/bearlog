@@ -9,7 +9,7 @@ import { DataBoundary } from '@/shared/components/ErrorSuspenseBoundary';
 import PageHeader from '@/shared/components/PageHeader';
 import TaskCardWrapper from '@/features/dashboard/components/TaskCardWrapper';
 
-import { goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries, todoQueries } from '@/shared/lib/query/queryFunction';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import type { TodoListResponse } from '@/shared/lib/api';
 import { TodoOptions } from '@/shared/types/types';
@@ -40,7 +40,7 @@ export default function AllTodoContent() {
       <section className="flex flex-col gap-3">
         <AllTodoFilter todos={allTodos} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
         {allTodos.length === 0 ? (
-          <section className="rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8 w-full max-w-180 h-204 flex items-center justify-center">
+          <section className="dark:bg-gray-850 flex h-204 w-full max-w-180 items-center justify-center rounded-4xl bg-white p-4 md:p-8">
             <Empty>{t.allTodo.empty}</Empty>
           </section>
         ) : (
@@ -94,7 +94,7 @@ function AllTodoFilter({ todos, selectedFilter, setSelectedFilter }: AllTodoFilt
       </div>
       <Button
         variant="cancel"
-        className="group hover:bg-bearlog-500 flex items-center gap-1 bg-[#F2F2F2] dark:bg-bearlog-500 dark:border-transparent px-3 py-[10px] md:px-[20px]"
+        className="group hover:bg-bearlog-500 dark:bg-bearlog-500 flex items-center gap-1 bg-[#F2F2F2] px-3 py-[10px] md:px-[20px] dark:border-transparent"
         disabled={!defaultGoalId}
         onClick={() => {
           if (!defaultGoalId) return;
@@ -112,8 +112,8 @@ function AllTodoFilter({ todos, selectedFilter, setSelectedFilter }: AllTodoFilt
           });
         }}
       >
-        <PlusIcon size={20} className="text-gray-500 dark:text-gray-850 group-hover:text-white" />
-        <span className="overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-gray-500 dark:text-gray-850 group-hover:text-white">
+        <PlusIcon size={20} className="dark:text-gray-850 text-gray-500 group-hover:text-white" />
+        <span className="dark:text-gray-850 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-gray-500 group-hover:text-white">
           {t.allTodo.addTodo}
         </span>
       </Button>
@@ -149,7 +149,7 @@ function AllTodoFetcher({ todos, fetchNextPage, hasNextPage, isFetchingNextPage 
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <section className="rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8">
+    <section className="dark:bg-gray-850 rounded-4xl bg-white p-4 md:p-8">
       <div className="mb-6 flex flex-col items-center rounded-2xl bg-[#C6D7D11C] py-[10px]">
         <span className="text-sm text-[#AFB6B4B8]">{t.allTodo.issueReopenNotice1}</span>
         <span className="text-sm text-[#AFB6B4B8]">{t.allTodo.issueReopenNotice2}</span>
