@@ -177,4 +177,11 @@ export const dashboardQueries = {
       queryFn: () => fetchDashboard.getDashboardDetailTodos(),
       staleTime: DASHBOARD_STALE_TIME,
     }),
+
+  detailTodosByGoals: (goalIds: number[]) =>
+    queryOptions({
+      queryKey: dashboardKeys.detailTodosByGoals(goalIds),
+      queryFn: () => fetchDashboard.getDashboardDetailTodos(goalIds),
+      staleTime: DASHBOARD_STALE_TIME,
+    }),
 };

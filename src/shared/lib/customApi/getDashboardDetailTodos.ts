@@ -19,14 +19,25 @@ const toProgressPercent = (completedCount: number, todoCount: number): number =>
   return Math.round((completedCount / todoCount) * 100);
 };
 
-export const getDashboardDetailTodos = async (): Promise<DashboardDetailTodosResult> => {
+const normalizeGoalIds = (goalIds?: number[]): number[] => {
+  if (!goalIds) return [];
+  return [...new Set(goalIds.filter((id) => Number.isInteger(id) && id > 0))];
+};
+
+export const getDashboardDetailTodos = async (goalIds?: number[]): Promise<DashboardDetailTodosResult> => {
+  const targetGoalIds = normalizeGoalIds(goalIds);
+  const targetGoalIdSet = new Set(targetGoalIds);
+  const todoFetchLimit = Math.max(SAFE_LIMIT * Math.max(targetGoalIds.length, 1), SAFE_LIMIT * 5);
+
   const [goalsRes, openTodosRes, doneTodosRes] = await Promise.allSettled([
-    fetchGoals.getGoals(),
-    fetchTodos.getTodos({ sort: 'LATEST', search: '', limit: 300, done: false }),
-    fetchTodos.getTodos({ sort: 'LATEST', search: '', limit: 300, done: true }),
+    fetchGoals.getGoals({ limit: Math.max(targetGoalIds.length, 50) }),
+    fetchTodos.getTodos({ sort: 'LATEST', search: '', limit: todoFetchLimit, done: false }),
+    fetchTodos.getTodos({ sort: 'LATEST', search: '', limit: todoFetchLimit, done: true }),
   ]);
 
-  const goals = goalsRes.status === 'fulfilled' ? goalsRes.value.goals : [];
+  const allGoals = goalsRes.status === 'fulfilled' ? goalsRes.value.goals : [];
+  const goals =
+    targetGoalIds.length > 0 ? allGoals.filter((goal) => targetGoalIdSet.has(goal.id)) : allGoals;
   const openTodos = openTodosRes.status === 'fulfilled' ? openTodosRes.value.todos : [];
   const doneTodos = doneTodosRes.status === 'fulfilled' ? doneTodosRes.value.todos : [];
 
