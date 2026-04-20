@@ -36,8 +36,15 @@ class FetchDashboard {
     return payload.data;
   };
 
-  getDashboardDetailTodos = async (): Promise<{ items: DashboardDetailTodosResponse[] }> => {
-    const response = await fetch('/api/dashboard/detail', {
+  getDashboardDetailTodos = async (goalIds?: number[]): Promise<{ items: DashboardDetailTodosResponse[] }> => {
+    const params = new URLSearchParams();
+    const normalizedGoalIds = (goalIds ?? []).filter((id) => Number.isInteger(id) && id > 0);
+    if (normalizedGoalIds.length > 0) {
+      params.set('goalIds', normalizedGoalIds.join(','));
+    }
+
+    const requestUrl = params.size > 0 ? `/api/dashboard/detail?${params.toString()}` : '/api/dashboard/detail';
+    const response = await fetch(requestUrl, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

@@ -60,13 +60,13 @@ export default function TaskCardWrapper({
           error instanceof ApiError
             ? error.message
             : todoDetail.type === 'ISSUE'
-              ? 'GitHub Issue close�� �����߽��ϴ�. ��� �� �ٽ� �õ����ּ���.'
-              : 'GitHub PR merge�� �����߽��ϴ�. ��� �� �ٽ� �õ����ּ���.';
+              ? 'GitHub Issue close에 실패했습니다. 다시 시도해주세요.'
+              : 'GitHub PR merge에 실패했습니다. 다시 시도해주세요.';
         showToast(message, 'fail');
       } else {
-        showToast('���� ���� ������Ʈ�� �����߽��ϴ�.', 'fail');
+        showToast('할 일 상태 업데이트에 실패했습니다.', 'fail');
       }
-      console.error('���� ���� ������Ʈ ����:', error);
+      console.error('할 일 상태 업데이트 오류:', error);
     }
   };
 
@@ -83,7 +83,7 @@ export default function TaskCardWrapper({
         showToast(nextStarred ? t.mutations.favoriteAdded : t.mutations.favoriteRemoved);
       },
       onError: (error) => {
-        console.error(error);
+        console.error('즐겨찾기 상태 업데이트 오류:', error);
         setStarred(!nextStarred);
       },
     });

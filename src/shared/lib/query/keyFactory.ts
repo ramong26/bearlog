@@ -59,4 +59,5 @@ export const dashboardKeys = {
   all: ['dashboard'] as const,
   summary: () => [...dashboardKeys.all, 'summary'] as const,
   detailTodos: () => [...dashboardKeys.all, 'detailTodos'] as const,
+  detailTodosByGoals: (goalIds: number[]) => [...dashboardKeys.detailTodos(), goalIds] as const,
 };
