@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-[60%] right-5 -translate-y-1/2 text-gray-500"
+            className="absolute top-1/2 right-5 -translate-y-1/2 text-gray-500"
             aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
           >
             {showPassword ? <Eye size={22} /> : <EyeOff size={22} />}

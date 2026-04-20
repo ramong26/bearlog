@@ -36,6 +36,7 @@
     "signupFail": "회원가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
   },
   "validation": {
+    "nameRequired": "이름을 입력해주세요.",
     "emailRequired": "이메일을 입력해주세요.",
     "emailInvalid": "잘못된 이메일입니다.",
     "passwordRequired": "비밀번호를 입력해주세요.",

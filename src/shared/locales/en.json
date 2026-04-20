@@ -36,6 +36,7 @@
     "signupFail": "An error occurred during sign up. Please try again later."
   },
   "validation": {
+    "nameRequired": "Please enter your name.",
     "emailRequired": "Please enter your email.",
     "emailInvalid": "Invalid email address.",
     "passwordRequired": "Please enter your password.",
