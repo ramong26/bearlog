@@ -9,7 +9,7 @@ import Tag from '@/shared/components/Tag';
 
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { TodoResponse } from '@/shared/lib/api';
-import { noteQueries } from '@/shared/lib/query/queryKeys';
+import { noteQueries } from '@/shared/lib/query/queryFunction';
 import { formatDate } from '@/shared/utils/utils';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 
@@ -33,7 +33,7 @@ const DetailTodoModalComponents = memo(function DetailTodoModalComponents({ todo
   const hasGithubLink = githubSourceLabel && todo.linkUrl;
 
   return (
-    <div className="flex w-85.75 flex-col gap-6 rounded-3xl bg-white dark:bg-gray-850 p-4 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:w-114 md:rounded-[40px] md:p-8">
+    <div className="dark:bg-gray-850 flex w-85.75 flex-col gap-6 rounded-3xl bg-white p-4 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:w-114 md:rounded-[40px] md:p-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xl font-semibold text-gray-800 dark:text-gray-100">{todo?.title}</span>
@@ -42,7 +42,7 @@ const DetailTodoModalComponents = memo(function DetailTodoModalComponents({ todo
           </div>
           {/* GitHub 소스 뱃지 */}
           {githubSourceLabel && (
-            <span className="rounded-lg bg-[#F6F8FA] dark:bg-gray-700 px-[6px] py-[3px] text-xs font-semibold text-gray-600 dark:text-gray-300">
+            <span className="rounded-lg bg-[#F6F8FA] px-[6px] py-[3px] text-xs font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
               {githubSourceLabel}
             </span>
           )}
@@ -69,7 +69,7 @@ const DetailTodoModalComponents = memo(function DetailTodoModalComponents({ todo
       {githubSourceLabel && (
         <div className="flex flex-col gap-2">
           <span className="text-base font-semibold text-gray-700 dark:text-gray-300">GitHub 연동</span>
-          <div className="flex items-center gap-2 rounded-2xl bg-[#F6F8FA] dark:bg-gray-700 px-4 py-3">
+          <div className="flex items-center gap-2 rounded-2xl bg-[#F6F8FA] px-4 py-3 dark:bg-gray-700">
             <GitBranchIcon size={16} className="shrink-0 text-gray-400" />
             {hasGithubLink ? (
               <a
@@ -164,7 +164,7 @@ function NoteItem({ noteId }: { noteId: number }) {
         closeModal();
         router.push(`/goal/${note?.goalId}/note/${noteId}`);
       }}
-      className="flex gap-2 rounded-2xl border border-gray-200 bg-white dark:bg-gray-700 dark:border-gray-600 p-2"
+      className="flex gap-2 rounded-2xl border border-gray-200 bg-white p-2 dark:border-gray-600 dark:bg-gray-700"
     >
       <Image src={'/image/todo-note.svg'} alt="노트 이미지" width={32} height={32} />
       <span className="flex items-center text-base font-medium text-gray-700 dark:text-gray-300">{note?.title}</span>

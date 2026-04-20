@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { todoQueries, goalQueries, userQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries, goalQueries, userQueries } from '@/shared/lib/query/queryFunction';
 
 export function useCalendar() {
   const today = new Date();

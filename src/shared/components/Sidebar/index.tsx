@@ -27,7 +27,7 @@ import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { usePostGoal, usePostLogout } from '@/shared/lib/query/mutations';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
-import { userQueries } from '@/shared/lib/query/queryKeys';
+import { userQueries } from '@/shared/lib/query/queryFunction';
 import { CurrentUserResponse } from '@/shared/lib/api';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';

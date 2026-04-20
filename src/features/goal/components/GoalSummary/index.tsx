@@ -14,7 +14,7 @@ import SinglePostModal from '@/shared/components/Modal/SinglePostModal';
 
 import { GoalDetailResponse } from '@/shared/lib/api';
 import { useDeleteGoal, useDisconnectGithubGoal, usePatchGoal } from '@/shared/lib/query/mutations';
-import { goalQueries, userQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries, userQueries } from '@/shared/lib/query/queryFunction';
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';

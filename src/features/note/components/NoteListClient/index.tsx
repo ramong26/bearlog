@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { noteQueries, goalQueries } from '@/shared/lib/query/queryKeys';
+import { noteQueries, goalQueries } from '@/shared/lib/query/queryFunction';
 import NoteItem from '@/features/note/components/NoteItem';
 import GoalItem from '@/features/note/components/GoalItem';
 import Pagination from '@/features/note/components/Pagination';

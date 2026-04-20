@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { getDashboardSummaryResult } from '@/shared/lib/customApi/getDashboardSummaryResult';
+import { getDashboardDetailTodos } from '@/shared/lib/customApi/getDashboardDetailTodos';
 
 export async function GET() {
   try {
-    const result = await getDashboardSummaryResult();
+    const result = await getDashboardDetailTodos();
 
     return NextResponse.json(result, {
       status: result.hasAnySuccess ? 200 : 502,
@@ -13,6 +13,6 @@ export async function GET() {
       },
     });
   } catch {
-    return NextResponse.json({ message: 'Failed to fetch dashboard summary' }, { status: 502 });
+    return NextResponse.json({ message: 'Failed to fetch dashboard detail todos' }, { status: 502 });
   }
 }

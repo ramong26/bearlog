@@ -13,7 +13,7 @@ import TaskCardWrapper from '../TaskCardWrapper';
 
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
 import { useGithubRepoConnectModal } from '@/shared/hooks/useGithubRepoConnectModal';
-import { dashboardQueries } from '@/shared/lib/query/queryKeys';
+import { dashboardQueries } from '@/shared/lib/query/queryFunction';
 import { useTodoModeStore, TodoMode } from '@/shared/stores/useTodoModeStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { DashboardSummaryResponse } from '@/shared/types/api/schemas/api.process';

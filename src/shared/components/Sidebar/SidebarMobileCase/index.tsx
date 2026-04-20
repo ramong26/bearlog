@@ -7,7 +7,7 @@ import PageHeader from '@/shared/components/PageHeader';
 import NotificationDropdown from '@/shared/components/Sidebar/NotificationDropdown';
 import { useMobileHeaderStore } from '@/shared/stores/useMobileHeaderStore';
 import { CurrentUserResponse } from '@/shared/lib/api/fetchUsers';
-import { todoQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries } from '@/shared/lib/query/queryFunction';
 import { useQuery } from '@tanstack/react-query';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 
