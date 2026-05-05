@@ -126,7 +126,7 @@ httpOnly 쿠키에 저장된 JWT가 직접 노출되지 않도록 서버 사이�
 
 ---
 
-## 성능 최적화 — 대시보드 k6 스트레스 테스트
+## [성능 최적화 — 대시보드 k6 스트레스 테스트](https://velog.io/@ramong26/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-K6-api-%EC%8A%A4%ED%8A%B8%EB%A0%88%EC%8A%A4-%ED%85%8C%EC%8A%A4%ED%8A%B8-%EC%A7%84%ED%96%89%EA%B8%B0-1)
 
 ### 문제 파악
 
