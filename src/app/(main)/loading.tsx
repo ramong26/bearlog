@@ -1,9 +1,0 @@
-import LoadingSpinner from '@/shared/components/LoadingSpinner';
-
-export default function Loading() {
-  return (
-    <div className="flex min-h-screen items-center justify-center">
-      <LoadingSpinner className="bg-bearlog-500" />
-    </div>
-  );
-}
