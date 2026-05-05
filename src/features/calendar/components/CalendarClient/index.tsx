@@ -42,7 +42,7 @@ export default function CalendarClient() {
   return (
     <>
       {!isMobile && <PageHeader title={user?.nickname ? `${user.nickname}${t.calendar.title}` : t.sidebar.calendar} className="md:mb-[32px] lg:mb-5" />}
-      <div className="border-border-secondary flex w-full flex-col bg-white md:rounded-t-4xl md:rounded-b-4xl md:border">
+      <div className="border-border-secondary flex w-full flex-col bg-white dark:bg-gray-850 md:rounded-t-4xl md:rounded-b-4xl md:border dark:border-0">
         <CalendarHeader
           goalId={goalId}
           goalFilterItems={translatedGoalFilterItems}

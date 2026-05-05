@@ -8,7 +8,18 @@ import { fetchNotifications } from '../api/fetchNotifications';
 import { fetchTags } from '../api/fetchTags';
 import { fetchTodos, type GetTodosParams, type GetTodoCalendarParams } from '../api/fetchTodos';
 import { fetchUsers } from '../api/fetchUsers';
-import { authKeys, githubKeys, goalKeys, noteKeys, notificationKeys, tagKeys, todoKeys, userKeys } from './keyFactory';
+import {
+  authKeys,
+  dashboardKeys,
+  githubKeys,
+  goalKeys,
+  noteKeys,
+  notificationKeys,
+  tagKeys,
+  todoKeys,
+  userKeys,
+} from './keyFactory';
+import { fetchDashboard } from '../api/fetchDashboard';
 
 const DASHBOARD_STALE_TIME = 1000 * 60 * 5;
 // goal queries
@@ -104,6 +115,9 @@ export const githubQueries = {
     queryOptions({
       queryKey: githubKeys.repositories(),
       queryFn: fetchGithubIntegrations.getRepositories,
+      staleTime: DASHBOARD_STALE_TIME,
+      retry: false,
+      refetchOnWindowFocus: false,
     }),
 };
 
@@ -145,5 +159,15 @@ export const tagQueries = {
     queryOptions({
       queryKey: tagKeys.lists(),
       queryFn: fetchTags.getTags,
+    }),
+};
+
+// dashboard queries
+export const dashboardQueries = {
+  summary: () =>
+    queryOptions({
+      queryKey: dashboardKeys.summary(),
+      queryFn: () => fetchDashboard.getDashboardSummary(),
+      staleTime: DASHBOARD_STALE_TIME,
     }),
 };

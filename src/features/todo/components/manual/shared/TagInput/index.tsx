@@ -35,7 +35,7 @@ export default function TagInput({ tags, onAddTag, onRemoveTag }: TagInputProps)
   };
 
   return (
-    <div className="flex min-h-[44px] w-full flex-wrap items-center gap-2 rounded-xl border border-[#CCC] px-3 py-2 md:min-h-[56px] md:rounded-2xl md:px-4 md:py-3">
+    <div className="flex min-h-[44px] w-full flex-wrap items-center gap-2 rounded-xl border border-[#CCC] px-3 py-2 md:min-h-[56px] md:rounded-2xl md:px-4 md:py-3 dark:border-[#7E7E7E] dark:bg-gray-850">
       {tags.map((tag) => (
         <Tag key={tag} string={tag} onClose={() => onRemoveTag(tag)} className="px-2 py-1 text-xs" />
       ))}
@@ -45,7 +45,7 @@ export default function TagInput({ tags, onAddTag, onRemoveTag }: TagInputProps)
         ref={inputRef}
         onKeyDown={handleKeyDown}
         placeholder={tags.length === 0 ? t.todo.tagPlaceholder : ''}
-        className="min-w-[80px] flex-1 border-none bg-transparent p-0 text-sm text-[#333] placeholder:text-[#737373] focus:outline-none md:text-base"
+        className="min-w-20 flex-1 border-none bg-transparent p-0 text-sm text-[#333] placeholder:text-gray-500 focus:outline-none md:text-base dark:text-gray-100 dark:placeholder:text-gray-400"
       />
     </div>
   );

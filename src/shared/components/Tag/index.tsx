@@ -11,7 +11,7 @@ interface TagProps {
 }
 
 const variantStyles = {
-  green: 'bg-bearlog-500 text-[#FFF]',
+  green: 'bg-bearlog-500 text-white dark:text-gray-800',
 };
 
 const Tag = forwardRef<HTMLDivElement, TagProps>(({ string, onClose, variant = 'green', className }, ref) => {

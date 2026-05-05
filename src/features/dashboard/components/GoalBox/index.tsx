@@ -12,7 +12,7 @@ import Progressbar from '@/shared/components/Progressbar';
 import SearchInput from '@/shared/components/SearchInput';
 import TaskCardWrapper from '../TaskCardWrapper';
 
-import type { GoalDetailResponse, TodoResponse } from '@/shared/lib/api';
+import type { GoalDetailResponse } from '@/shared/lib/api';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import { useGithubTodoCreateModal } from '@/features/todo/hooks/useGithubTodoCreateModal';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -20,20 +20,19 @@ import { todoQueries } from '@/shared/lib/query/queryKeys';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 
 interface GoalBoxProps {
-  goalDetail: GoalDetailResponse;
+  data: GoalDetailResponse;
 }
-export default function GoalBox({ goalDetail }: GoalBoxProps) {
+export default function GoalBox({ data }: GoalBoxProps) {
   const { openTodoCreateModal } = useTodoCreateModal();
   const { openGithubTodoCreateModal } = useGithubTodoCreateModal();
   const { t } = useLanguage();
-  const isGithubGoal = goalDetail.source === 'GITHUB';
 
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search.trim(), 300);
   const isSearching = debouncedSearch.length > 0;
 
   const { data: searchResult } = useQuery({
-    ...todoQueries.list({ sort: 'LATEST', search: debouncedSearch, goalId: goalDetail.id }),
+    ...todoQueries.list({ sort: 'LATEST', search: debouncedSearch, goalId: data.id }),
     placeholderData: keepPreviousData,
     enabled: isSearching,
   });
@@ -41,20 +40,22 @@ export default function GoalBox({ goalDetail }: GoalBoxProps) {
   const searchTodoItems = isSearching ? (searchResult?.todos.filter((todo) => !todo.done) ?? null) : null;
   const searchDoneItems = isSearching ? (searchResult?.todos.filter((todo) => todo.done) ?? null) : null;
 
+  const isGithubGoal = data.source === 'GITHUB';
+
   const handleAddTodo = () => {
-    if (goalDetail.id === undefined) return;
+    if (data.id === undefined) return;
 
     if (isGithubGoal) {
       openGithubTodoCreateModal({
-        goalId: goalDetail.id,
-        goalTitle: goalDetail.title,
+        goalId: data.id,
+        goalTitle: data.title,
       });
     } else {
       openTodoCreateModal({
-        goalDetailId: goalDetail.id,
+        goalDetailId: data.id,
         todo: {
           title: '',
-          goalId: goalDetail.id,
+          goalId: data.id,
           dueDate: undefined,
           linkUrl: undefined,
           imageUrl: undefined,
@@ -67,9 +68,9 @@ export default function GoalBox({ goalDetail }: GoalBoxProps) {
   const noSearchResults = isSearching && searchTodoItems?.length === 0 && searchDoneItems?.length === 0;
 
   return (
-    <article className="flex flex-col gap-4 rounded-[40px] bg-white p-6 lg:px-8 lg:py-6">
+    <article className="flex flex-col gap-4 rounded-[40px] bg-white dark:bg-gray-850 p-6 lg:px-8 lg:py-6">
       <div className="flex flex-col items-center gap-2 px-2 md:flex-row md:gap-12 lg:gap-8">
-        <GoalName goalDetail={goalDetail} />
+        <GoalName data={data} />
 
         <div className="flex w-full flex-1 justify-between gap-0 md:justify-end md:gap-2 lg:gap-[14px]">
           <SearchInput
@@ -81,7 +82,7 @@ export default function GoalBox({ goalDetail }: GoalBoxProps) {
           <Button
             variant="primary"
             className="p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px]"
-            disabled={goalDetail.id === undefined}
+            disabled={data.id === undefined}
             onClick={handleAddTodo}
           >
             <PlusIcon size={20} />
@@ -99,8 +100,18 @@ export default function GoalBox({ goalDetail }: GoalBoxProps) {
           </div>
         ) : (
           <>
-            <ListBox title={t.allTodo.todo} mode="todo" goalId={goalDetail.id} searchItems={searchTodoItems} />
-            <ListBox title={t.allTodo.done} mode="done" goalId={goalDetail.id} searchItems={searchDoneItems} />
+            <ListBox
+              title={t.allTodo.todo}
+              mode="todo"
+              goalId={data.id!}
+              searchItems={searchTodoItems}
+            />
+            <ListBox
+              title={t.allTodo.done}
+              mode="done"
+              goalId={data.id!}
+              searchItems={searchDoneItems}
+            />
           </>
         )}
       </div>
@@ -109,9 +120,9 @@ export default function GoalBox({ goalDetail }: GoalBoxProps) {
 }
 
 interface GoalNameProps {
-  goalDetail: GoalDetailResponse;
+  data: GoalDetailResponse;
 }
-function GoalName({ goalDetail }: GoalNameProps) {
+function GoalName({ data }: GoalNameProps) {
   const router = useRouter();
 
   return (
@@ -120,15 +131,15 @@ function GoalName({ goalDetail }: GoalNameProps) {
         <div className="w-full max-w-[229px]">
           <button
             onClick={() => {
-              if (goalDetail.id === undefined) return;
-              router.push(`goal/${goalDetail.id}`);
+              if (data.id === undefined) return;
+              router.push(`goal/${data.id}`);
             }}
-            className="font-base overflow-hidden text-left font-semibold text-ellipsis whitespace-nowrap text-gray-700"
+            className="font-base overflow-hidden text-left font-semibold text-ellipsis whitespace-nowrap text-gray-700 dark:text-gray-200"
           >
-            {goalDetail.title}
+            {data.title}
           </button>
         </div>
-        <Progressbar progress={goalDetail.progress ?? 0} />
+        <Progressbar progress={data.progress ?? 0} />
       </div>
     </div>
   );
@@ -138,10 +149,10 @@ interface ListBoxProps {
   title: string;
   mode: 'todo' | 'done';
   goalId: number;
-  searchItems: TodoResponse[] | null;
+  searchItems: { id: number; favorite?: boolean }[] | null;
 }
 function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
-  const bgColor = mode === 'todo' ? 'bg-[#E5F9F2]' : 'bg-white';
+  const bgColor = mode === 'todo' ? 'bg-[#E5F9F2] dark:bg-gray-750' : 'bg-white dark:bg-gray-750';
   const textColor = mode === 'todo' ? 'text-[#00D185]' : 'text-gray-400';
   const isDone = mode === 'done';
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -170,7 +181,6 @@ function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
     return () => observer.disconnect();
   }, [searchItems, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (goalId === undefined) return null;
   return (
     <div
       className={`flex h-[324px] flex-1 flex-col gap-4 overflow-hidden rounded-[16px] ${bgColor} p-4 lg:rounded-[24px] lg:p-6`}
@@ -184,7 +194,9 @@ function ListBox({ title, mode, goalId, searchItems }: ListBoxProps) {
             ))}
           </AnimatePresence>
           {searchItems === null && <div ref={sentinelRef} className="h-1" />}
-          {isFetchingNextPage && <div className="py-2 text-center text-xs text-gray-400">...</div>}
+          {isFetchingNextPage && (
+            <div className="py-2 text-center text-xs text-gray-400">...</div>
+          )}
         </div>
       </div>
     </div>

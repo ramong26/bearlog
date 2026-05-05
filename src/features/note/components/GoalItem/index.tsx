@@ -5,7 +5,7 @@ export default function GoalItem({ title }: { title: string }) {
   return (
     <div
       className={clsx(
-        'flex w-full items-center gap-3 rounded-2xl bg-[#FFF8E4] p-5 text-base font-semibold text-[#333]',
+        'flex w-full items-center gap-3 rounded-2xl bg-orange-100 dark:bg-[#4B4B4B] p-5 text-base font-semibold text-gray-700 dark:text-white',
         'md:p-6 md:text-xl',
         'lg:gap-6 lg:p-10 lg:text-2xl',
       )}

@@ -35,7 +35,7 @@ import { twMerge } from 'tailwind-merge';
  * @param className - 추가 스타일 클래스
  */
 export const dropdownVariants = cva(
-  'rounded-xl border border-[#CCC] bg-[#FFF] flex p-4 items-center gap-2 self-stretch text-base font-medium justify-between',
+  'rounded-xl border border-[#CCC] dark:border-[#7E7E7E] bg-[#FFF] dark:bg-gray-850 flex p-4 items-center gap-2 self-stretch text-base font-medium justify-between',
   {
     variants: {
       disabled: {
@@ -71,6 +71,7 @@ function Dropdown({
   placeholder,
 }: DropdownProps) {
   const [isToggleOpen, setIsToggleOpen] = useState(false);
+  const [hasUserSelected, setHasUserSelected] = useState(false);
   const selectedItem =
     items.find((item) => item.value === selectedValue) || items.find((item) => item.value === defaultValue);
 
@@ -79,6 +80,7 @@ function Dropdown({
 
   const handleSelectItem = (item: DropdownItemType) => {
     onSelectItem(item);
+    setHasUserSelected(true);
     setIsToggleOpen(false);
   };
 
@@ -90,7 +92,7 @@ function Dropdown({
         className={twMerge(
           dropdownVariants({ disabled: isDisabled }),
           'flex w-full items-center gap-2',
-          isToggleOpen ? 'border-bearlog-500 rounded-2xl border' : "border-gray-100",
+          hasUserSelected ? 'border-bearlog-500 dark:border-bearlog-500 rounded-2xl border' : 'border-gray-100',
           className,
         )}
         disabled={isDisabled}
@@ -100,7 +102,7 @@ function Dropdown({
           <span
             className={clsx(
               'line-clamp-1 text-sm font-normal md:text-base',
-              selectedItem ? 'text-gray-700' : 'text-[#838383]',
+              selectedItem ? 'text-gray-700 dark:text-gray-100' : 'text-[#838383] dark:text-gray-400',
             )}
           >
             {selectedItem?.label ?? placeholder}
@@ -128,7 +130,7 @@ export function DropdownList({ items, onSelectItem, className }: DropdownListPro
   return (
     <div
       className={twMerge(
-        clsx('w-full max-h-50 overflow-y-auto rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
+        clsx('max-h-64 w-full overflow-y-auto rounded-2xl shadow-[0px_4px_16px_-2px_rgba(0,0,0,0.1)]', className),
       )}
     >
       {items.map((item) => (
@@ -148,7 +150,7 @@ interface DropdownItemProps {
 
 export function DropdownItem({ item, onSelectItem }: DropdownItemProps) {
   return (
-    <div className="flex w-full bg-white p-1.5">
+    <div className="flex w-full bg-white p-1.5 dark:bg-gray-750">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -157,8 +159,8 @@ export function DropdownItem({ item, onSelectItem }: DropdownItemProps) {
         }}
         className={twMerge(clsx('flex w-full cursor-pointer'))}
       >
-        <div className={twMerge(clsx('hover:bg-bearlog-500/20 w-full rounded-xl p-2 text-left'))}>
-          <span className="text-sm leading-6 font-medium tracking-[-0.48px] text-[#333] md:text-base">
+        <div className={twMerge(clsx('hover:bg-bearlog-500/60 w-full rounded-xl p-2 text-left'))}>
+          <span className="text-sm leading-6 font-medium tracking-[-0.48px] text-[#333] md:text-base dark:text-gray-100">
             {item.label}
           </span>
         </div>

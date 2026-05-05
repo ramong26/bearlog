@@ -18,7 +18,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   tertiary: 'bg-transparent text-gray-500 rounded-full font-medium hover:bg-gray-100',
   danger: 'bg-red-500 text-white rounded-full font-semibold hover:bg-red-500/90',
   icon: 'bg-white text-[#FF8442] border-2 border-[#FF8442] rounded-full hover:bg-[#FF8442]/10',
-  cancel: 'bg-white text-gray-800 border border-gray-200 rounded-full font-medium hover:bg-gray-50',
+  cancel: 'bg-white text-gray-800 border border-gray-200 rounded-full font-medium hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-750',
   confirm: 'bg-[#FF8442] text-white rounded-full font-medium hover:bg-[#FF8442]/90',
 };
 

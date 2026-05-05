@@ -1,9 +1,18 @@
 @import 'tailwindcss';
 @import './design-system.css';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f5f5f5;
   --foreground: #171717;
+
+  /* semantic tokens */
+  --text-label: #333333;
+  --text-input: #333333;
+  --text-muted: #737373;
+  --bg-input: #ffffff;
+  --border-input: #dddddd;
 }
 
 @layer base {
@@ -18,13 +27,23 @@
   --font-base: 'Pretendard';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-text-label: var(--text-label);
+  --color-text-input: var(--text-input);
+  --color-text-muted: var(--text-muted);
+  --color-bg-input: var(--bg-input);
+  --color-border-input: var(--border-input);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #1a1a1a;
+  --foreground: #ededed;
+
+  /* semantic tokens */
+  --text-label: #737373;
+  --text-input: #f2f2f2;
+  --text-muted: #a4a4a4;
+  --bg-input: #2f2f2f;
+  --border-input: #737373;
 }
 
 @utility no-scrollbar {

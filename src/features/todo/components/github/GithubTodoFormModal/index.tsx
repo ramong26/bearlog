@@ -66,9 +66,13 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
 
   const dueDate = useWatch({ control, name: 'dueDate' });
   const source = useWatch({ control, name: 'source' });
+  const title = useWatch({ control, name: 'title' });
+  const headBranch = useWatch({ control, name: 'headBranch' });
+  const baseBranch = useWatch({ control, name: 'baseBranch' });
 
   const selectedDate = dueDate ? new Date(dueDate) : undefined;
   const isPR = source === 'GITHUB_PR';
+  const isFormIncomplete = !title?.trim() || !dueDate || (isPR && (!headBranch?.trim() || !baseBranch?.trim()));
 
   const postTodoMutation = usePostTodo();
   const isSubmitting = postTodoMutation.isPending;
@@ -103,13 +107,13 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
     <form
       onSubmit={handleSubmit(onSubmit)}
       className={clsx(
-        'no-scrollbar flex max-h-[90vh] w-full flex-col gap-3 overflow-y-auto rounded-t-[32px] bg-white p-6 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)]',
+        'no-scrollbar flex max-h-[90vh] w-full flex-col gap-3 overflow-y-auto rounded-t-[32px] bg-white dark:bg-gray-850 p-6 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)]',
         'md:w-[488px] md:gap-4 md:rounded-[40px] md:p-8',
       )}
     >
       <div className="mb-1 flex items-center justify-between md:mb-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-gray-800">{t.todo.createTitle}</h1>
+          <h1 className="text-xl font-semibold text-gray-800 dark:text-white">{t.todo.createTitle}</h1>
         </div>
         <button
           type="button"
@@ -124,7 +128,7 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
       {submitError && <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-500">{submitError}</p>}
 
       {/* 작업유형 선택 */}
-      <FormField label="작업유형" required>
+      <FormField label={t.todo.sourceTypeLabel} required>
         <div className="flex flex-wrap gap-3">
           {SOURCE_OPTIONS.map((option) => {
             const isSelected = source === option.value;
@@ -144,8 +148,8 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
                   className={clsx(
                     'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border transition-all duration-150',
                     isSelected
-                      ? 'border-bearlog-500 bg-bearlog-500 text-white'
-                      : 'border-gray-300 bg-white text-transparent',
+                      ? 'border-bearlog-500 bg-bearlog-500 text-white dark:text-gray-850'
+                      : 'border-gray-300 bg-white dark:border-[#7E7E7E] dark:bg-gray-850 text-transparent',
                   )}
                 >
                   <CheckIcon size={18} strokeWidth={3} />
@@ -166,40 +170,40 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
 
       {/* PR 생성 안내 */}
       {isPR && (
-        <div className="rounded-2xl bg-[#F6F8FA] px-4 py-3 text-xs leading-5 text-gray-600">
-          <p className="font-semibold text-gray-700">PR 생성 방식</p>
-          <p>• PR을 생성할 소스 브랜치(Head)와 대상 브랜치(Base)를 직접 입력하세요.</p>
-          <p>• 두 브랜치는 레포에 이미 존재해야 합니다.</p>
-          <p>• 완료 처리 시 실제 PR이 merge됩니다.</p>
+        <div className="rounded-2xl bg-[#F6F8FA] dark:bg-gray-750 px-4 py-3 text-xs leading-5 text-gray-600 dark:text-white">
+          <p className="font-semibold text-gray-700 dark:text-white">{t.todo.prGuideTitle}</p>
+          <p>{t.todo.prGuideDesc1}</p>
+          <p>{t.todo.prGuideDesc2}</p>
+          <p>{t.todo.prGuideDesc3}</p>
         </div>
       )}
 
       {/* Issue 생성 안내 */}
       {!isPR && (
-        <div className="rounded-2xl bg-[#F6F8FA] px-4 py-3 text-xs leading-5 text-gray-600">
-          <p className="font-semibold text-gray-700">Issue 생성 방식</p>
-          <p>• 연결된 레포에 GitHub Issue가 생성됩니다.</p>
-          <p>• 완료 처리 시 실제 Issue가 close됩니다.</p>
+        <div className="rounded-2xl bg-[#F6F8FA] dark:bg-gray-750 px-4 py-3 text-xs leading-5 text-gray-600 dark:text-white">
+          <p className="font-semibold text-gray-700 dark:text-white">{t.todo.issueGuideTitle}</p>
+          <p>{t.todo.issueGuideDesc1}</p>
+          <p>{t.todo.issueGuideDesc2}</p>
         </div>
       )}
 
-      <FormField label="제목" required>
+      <FormField label={t.todo.titleLabel} required>
         <Input
           autoFocus
-          {...register('title', { required: '제목은 필수입니다.' })}
-          placeholder={isPR ? 'GitHub PR 제목을 입력해주세요' : 'GitHub Issue 제목을 입력해주세요'}
-          className="h-11 rounded-xl border-gray-300 p-3 text-sm font-normal text-[#333] placeholder:text-gray-500 md:h-14 md:rounded-2xl md:p-4 md:text-base"
+          {...register('title', { required: t.todo.titleRequired })}
+          placeholder={isPR ? t.todo.githubPrTitlePlaceholder : t.todo.githubIssueTitlePlaceholder}
+          className="h-11 rounded-xl border-gray-300 dark:border-[#7E7E7E] p-3 text-sm font-normal text-[#333] dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 md:h-14 md:rounded-2xl md:p-4 md:text-base"
         />
         {errors.title && <p className="px-1 text-xs text-red-500 md:text-sm">{errors.title.message}</p>}
       </FormField>
 
       {/* PR 전용 — Head 브랜치 입력 */}
       {isPR && (
-        <FormField label="Head 브랜치 (소스)" required>
+        <FormField label={t.todo.headBranchLabel} required>
           <Input
-            {...register('headBranch', { required: 'Head 브랜치는 PR 생성에 필수입니다.' })}
-            placeholder="예: feature/my-feature"
-            className="h-11 rounded-xl border-gray-300 p-3 text-sm font-normal text-[#333] placeholder:text-gray-500 md:h-14 md:rounded-2xl md:p-4 md:text-base"
+            {...register('headBranch', { required: t.todo.headBranchRequired })}
+            placeholder={t.todo.headBranchPlaceholder}
+            className="h-11 rounded-xl border-gray-300 dark:border-[#7E7E7E] p-3 text-sm font-normal text-[#333] dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 md:h-14 md:rounded-2xl md:p-4 md:text-base"
           />
           {errors.headBranch && <p className="px-1 text-xs text-red-500 md:text-sm">{errors.headBranch.message}</p>}
         </FormField>
@@ -207,17 +211,17 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
 
       {/* PR 전용 — Base 브랜치 입력 */}
       {isPR && (
-        <FormField label="Base 브랜치" required>
+        <FormField label={t.todo.baseBranchLabel} required>
           <Input
-            {...register('baseBranch', { required: 'Base 브랜치는 PR 생성에 필수입니다.' })}
-            placeholder="예: main, develop"
-            className="h-11 rounded-xl border-gray-300 p-3 text-sm font-normal text-[#333] placeholder:text-gray-500 md:h-14 md:rounded-2xl md:p-4 md:text-base"
+            {...register('baseBranch', { required: t.todo.baseBranchRequired })}
+            placeholder={t.todo.baseBranchPlaceholder}
+            className="h-11 rounded-xl border-gray-300 dark:border-[#7E7E7E] p-3 text-sm font-normal text-[#333] dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 md:h-14 md:rounded-2xl md:p-4 md:text-base"
           />
           {errors.baseBranch && <p className="px-1 text-xs text-red-500 md:text-sm">{errors.baseBranch.message}</p>}
         </FormField>
       )}
 
-      <FormField label="마감기한" required>
+      <FormField label={t.todo.dueDateLabel} required>
         <DateInput
           {...register('dueDate', { required: t.todo.dueDateRequired })}
           date={selectedDate}
@@ -239,14 +243,14 @@ export default function GithubTodoFormModal({ goalId }: GithubTodoFormModalProps
         <Button
           type="button"
           variant="tertiary"
-          className="h-12 w-full border border-gray-300 text-gray-500 md:h-14"
+          className="h-12 w-full border border-gray-300 dark:border-[#7E7E7E] text-gray-500 md:h-14"
           onClick={closeModal}
           disabled={isSubmitting}
         >
-          취소
+          {t.common.cancel}
         </Button>
-        <Button type="submit" variant="primary" className="h-12 w-full md:h-14" disabled={isSubmitting}>
-          {isSubmitting ? '생성 중...' : '확인'}
+        <Button type="submit" variant="primary" className="h-12 w-full dark:text-gray-850 dark:disabled:bg-[#8C8C8C] md:h-14" disabled={isSubmitting || isFormIncomplete}>
+          {isSubmitting ? t.todo.creating : t.common.confirm}
         </Button>
       </div>
     </form>

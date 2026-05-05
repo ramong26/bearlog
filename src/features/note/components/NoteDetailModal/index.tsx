@@ -31,7 +31,7 @@ export default function NoteDetailModal({ children }: { children: React.ReactNod
       <Backdrop onClick={handleClose} closing={closing} />
       <div
         className={clsx(
-          'fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white',
+          'fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-850',
           'lg:w-[744px] lg:rounded-l-[40px]',
           closing ? 'note-panel-exit' : 'note-panel-enter',
         )}

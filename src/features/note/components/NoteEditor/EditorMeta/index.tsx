@@ -53,18 +53,18 @@ export default function EditorMeta({ goal, todos, createdAt, tags }: EditorMetaP
       {/* 왼쪽 — 목표 / 할 일 */}
       <div className="flex flex-1 flex-col gap-3 md:w-1/2">
         <MetaRow icon={<FlagIcon size={18} className="text-[#A4A4A4]" />} label={t.note.goalLabel}>
-          <span className="line-clamp-1 text-sm font-normal text-[#333333]">{goal.title}</span>
+          <span className="line-clamp-1 text-sm font-normal text-gray-700 dark:text-white">{goal.title}</span>
         </MetaRow>
         <MetaRow icon={<SquareCheck size={18} className="text-[#A4A4A4]" />} label={t.note.todoLabel}>
           <div className="flex items-center gap-2">
-            <span className="line-clamp-1 text-sm font-normal text-[#333333]">{todos.title}</span>
+            <span className="line-clamp-1 text-sm font-normal text-gray-700 dark:text-white">{todos.title}</span>
 
             <Tag
               string={todosTagLabel}
               className={clsx(
                 'rounded-md px-[5.5px] py-[3px] text-xs font-semibold',
-                !todos.done && 'text-bearlog-600 bg-[rgba(0,183,117,0.10)]',
-                todos.done && 'bg-[#BBB] text-[#FFF]',
+                !todos.done && 'text-bearlog-600 bg-[rgba(0,183,117,0.10)] dark:bg-[#C7F2EB] dark:text-bearlog-600',
+                todos.done && 'bg-[#BBB] text-[#FFF] dark:bg-[#707070]',
               )}
             />
           </div>
@@ -74,7 +74,7 @@ export default function EditorMeta({ goal, todos, createdAt, tags }: EditorMetaP
       {/* 오른쪽 — 작성일 / 태그 */}
       <div className="flex flex-1 flex-col gap-3 md:w-1/2">
         <MetaRow icon={<CalendarIcon size={17} className="line-clamp-1 text-[#A4A4A4]" />} label={t.note.createdAtLabel}>
-          <span className="line-clamp-1 text-sm font-normal text-[#333333]">{formattedCreatedAt ?? today}</span>
+          <span className="line-clamp-1 text-sm font-normal text-gray-700 dark:text-white">{formattedCreatedAt ?? today}</span>
         </MetaRow>
 
         <MetaRow icon={<Hash size={17} className="text-[#A4A4A4]" />} label={t.note.tagLabel}>

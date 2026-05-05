@@ -8,7 +8,7 @@ import Button from '@/shared/components/Button';
 import Empty from '@/shared/components/Empty';
 import TaskCardWrapper from '@/features/dashboard/components/TaskCardWrapper';
 
-import { goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries } from '@/shared/lib/query/queryKeys';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import { useGithubTodoCreateModal } from '@/features/todo/hooks/useGithubTodoCreateModal';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
@@ -26,11 +26,6 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
     enabled: !!goalId,
   });
 
-  // const { data: todoDetail } = useQuery({
-  //   ...todoQueries.detail(goalDetail?.todoList),
-  //   enabled: !!goalId,
-  // });
-  console.log('goalDetail', goalDetail);
   const isGithubGoal = goalDetail?.source === 'GITHUB';
 
   const handleAddTodo = () => {
@@ -64,7 +59,7 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
             <div className="flex gap-2">
               <Button
                 variant="cancel"
-                className="rounded-full bg-gray-100 p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px]"
+                className="rounded-full border border-gray-300 bg-inherit p-2.5 md:px-4.5 md:py-2.5 lg:py-2.5 dark:bg-gray-900 dark:hover:bg-gray-900"
               >
                 <CalendarIcon size={20} color="#737373" />
                 <Link href={`/calendar`} className="hidden w-full w-max text-sm font-semibold text-gray-500 md:block">
@@ -72,7 +67,7 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
                 </Link>
               </Button>
               <Button
-                className="rounded-full p-[10px] md:px-[14.5px] md:px-[18px] md:py-[10px] lg:py-[10px]"
+                className="dark:text-gray-850 rounded-full p-2.5 md:px-4.5 md:py-2.5 lg:py-2.5"
                 onClick={handleAddTodo}
               >
                 <PlusIcon size={20} />
@@ -83,29 +78,29 @@ export default function GoalDetail({ goalId }: GoalDetailProps) {
             </div>
           }
         />
-        <section className="rounded-2xl bg-white px-[28px] py-[32px]">
-          <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
-            {/* {goalDetail?.todoList && goalDetail?.todoList.length > 0 ? (
+        <section className="dark:bg-gray-750 h-144 w-full rounded-2xl bg-white px-7 py-8">
+          <div className="flex h-full flex-col gap-4 overflow-y-auto">
+            {goalDetail?.todoList && goalDetail?.todoList.length > 0 ? (
               goalDetail.todoList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="todo" />)
             ) : (
-              <div className="flex min-h-[120px] items-center justify-center">
-                <Empty>{t.goal.emptyTodo}</Empty>
+              <div className="flex flex-1 items-center justify-center">
+                <Empty>{t.goal.emptyTodoList}</Empty>
               </div>
-            )} */}
+            )}
           </div>
         </section>
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-[10px]">
         <PageSubTitle subTitle="DONE" textClassName="font-semibold" className="py-[6px]" />
-        <section className="rounded-2xl bg-white px-[28px] py-[32px]">
-          <div className="flex max-h-[512px] flex-col gap-4 overflow-y-auto">
-            {/* {goalDetail?.doneList && goalDetail?.doneList.length > 0 ? (
+        <section className="dark:bg-gray-750 h-144 w-full rounded-2xl bg-white px-7 py-8">
+          <div className="flex h-full flex-col gap-4 overflow-y-auto">
+            {goalDetail?.doneList && goalDetail?.doneList.length > 0 ? (
               goalDetail.doneList.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="done" />)
             ) : (
-              <div className="flex min-h-[120px] items-center justify-center">
-                <Empty>{t.goal.emptyTodo}</Empty>
+              <div className="flex flex-1 items-center justify-center">
+                <Empty>{t.goal.emptyDoneList}</Empty>
               </div>
-            )} */}
+            )}
           </div>
         </section>
       </div>

@@ -12,6 +12,7 @@ import { fetchAuth } from '@/shared/lib/api/fetchAuth';
 import { useToastStore } from '@/shared/stores/useToastStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import LoadingSpinner from '@/shared/components/LoadingSpinner';
+import { GITHUB_AUTH_INTENT_KEY } from '@/shared/constants/githubAuth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,7 +47,10 @@ export default function LoginPage() {
   const handleGithubLogin = async () => {
     try {
       const { loginUrl } = await fetchAuth.getGithubAuthorizeUrlByEnv();
-      if (loginUrl) window.location.href = loginUrl;
+      if (loginUrl) {
+        window.sessionStorage.setItem(GITHUB_AUTH_INTENT_KEY, 'login');
+        window.location.href = loginUrl;
+      }
     } catch (error) {
       console.error('GitHub 로그인 URL 요청 실패:', error);
       showToast(t.auth.socialLoginFail, 'fail');
@@ -56,7 +60,9 @@ export default function LoginPage() {
   const handleGoogleLogin = async () => {
     try {
       const { loginUrl } = await fetchAuth.getGoogleAuthorizeUrlByEnv();
-      if (loginUrl) window.location.href = loginUrl;
+      if (loginUrl) {
+        window.location.href = loginUrl;
+      }
     } catch (error) {
       console.error('Google 로그인 URL 요청 실패:', error);
       showToast(t.auth.socialLoginFail, 'fail');
@@ -76,7 +82,7 @@ export default function LoginPage() {
             handleLogin();
           }}
         >
-          <FormField label={t.auth.email}>
+          <FormField label={t.auth.email} hideLabel>
             <Input
               type="email"
               placeholder={t.auth.emailPlaceholder}
@@ -84,7 +90,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </FormField>
-          <FormField label={t.auth.password}>
+          <FormField label={t.auth.password} hideLabel>
             <Input
               type="password"
               placeholder={t.auth.passwordPlaceholder}
@@ -92,17 +98,13 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </FormField>
-          <Button
-            type="submit"
-            className={`mt-8 h-14 w-full bg-bearlog-500 hover:bg-bearlog-600 ${isLoading ? 'disabled:opacity-100 disabled:bg-bearlog-500' : ''}`}
-            disabled={!email || !password || isLoading}
-          >
+          <Button type="submit" className="mt-8 h-14 w-full" disabled={!email || !password || isLoading}>
             {isLoading ? <LoadingSpinner /> : t.auth.loginButton}
           </Button>
         </form>
 
         <div className="mt-6 flex h-6 w-full items-center justify-center gap-2 text-sm">
-          <span className="text-base leading-6 font-medium text-[#333333]">{t.auth.noAccount}</span>
+          <span className="text-text-label text-base leading-6 font-medium">{t.auth.noAccount}</span>
           <Link href="/signup" className="text-base leading-6 font-semibold text-[#008354]">
             {t.auth.signup}
           </Link>

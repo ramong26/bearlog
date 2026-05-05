@@ -81,11 +81,11 @@ export default function EditDeleteDropdown({
     <div
       ref={dropdownRef}
       style={{ position: 'fixed', top: position.top, left: position.left }}
-      className="z-50 min-w-[140px] rounded-xl border border-orange-100 bg-white p-1 shadow-lg"
+      className="z-50 w-[102px] rounded-2xl border-none bg-white dark:bg-gray-600 p-1 shadow-xl"
     >
       <button
         type="button"
-        className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-orange-50 disabled:cursor-not-allowed disabled:text-gray-400 disabled:hover:bg-white"
+        className="block w-full rounded-xl px-3 py-[9px] text-left text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-750 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
         onClick={handleEdit}
         disabled={editDisabled}
       >
@@ -93,7 +93,7 @@ export default function EditDeleteDropdown({
       </button>
       <button
         type="button"
-        className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-500 hover:bg-red-50"
+        className="block w-full rounded-xl px-3 py-[9px] text-left text-sm font-medium text-red-500 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-750"
         onClick={handleDelete}
       >
         {t.common.delete}

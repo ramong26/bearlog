@@ -10,8 +10,8 @@ interface NavButtonProps {
 }
 
 const btnBase = 'flex-row-center h-6 w-6 cursor-pointer rounded-[5px] p-0.5';
-const enabledStyle = 'bg-primary-500-10 text-primary-500';
-const disabledStyle = 'bg-gray-200 text-gray-300';
+const enabledStyle = 'bg-primary-500-10 text-primary-500 dark:bg-[#3E3E3E]';
+const disabledStyle = 'bg-gray-200 text-gray-300 dark:bg-[#3E3E3E] dark:text-gray-600';
 
 const NavButton = ({ icon: Icon, disabled, onClick, 'aria-label': ariaLabel }: NavButtonProps) => {
   return (
@@ -35,7 +35,9 @@ interface PageButtonProps {
 
 const PageButton = ({ page, active, onClick, disabled }: PageButtonProps) => {
   const base = 'inline-flex items-center justify-center cursor-pointer rounded-[5px] py-[2px] h-6 min-w-6';
-  const style = active ? 'bg-primary-500 text-gray-600/50 font-body-b' : 'bg-gray-100 text-gray-600 font-body-m';
+  const style = active
+    ? 'bg-primary-500 text-gray-600/50 font-body-b dark:text-white'
+    : 'bg-gray-100 text-gray-600 font-body-m dark:bg-[#3E3E3E] dark:text-white';
 
   if (page === '...') return <div className={`${base} ${style}`}>···</div>;
 

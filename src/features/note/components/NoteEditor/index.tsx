@@ -38,14 +38,14 @@ export default function NoteEditor({
   return (
     <div
       className={clsx(
-        'flex h-full w-full min-w-0 flex-col bg-[#FFF]',
+        'flex h-full w-full min-w-0 flex-col bg-white dark:bg-gray-850',
         'gap-[10px] rounded-3xl p-4',
         'md:rounded-4xl md:px-[30px] md:py-8',
       )}
     >
       {!isMobile && <EditorToolbar editor={editor} onLinkUrlChange={onLinkUrlChange} />}
 
-      <section className="border-b border-b-[#DDD] pb-4 md:pt-[19px] md:pb-5 lg:pb-7">
+      <section className="border-b border-b-[#DDD] dark:border-b-[#555555] pb-4 md:pt-[19px] md:pb-5 lg:pb-7">
         <EditorTitle title={title} onChange={handleTitleChange} />
         <EditorMeta
           goal={{ title: goal?.title ?? todo?.goal?.title ?? '' }}

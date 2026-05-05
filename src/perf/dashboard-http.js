@@ -3,44 +3,34 @@ import { check, sleep } from 'k6';
 
 const BASE_URL = (__ENV.BASE_URL || 'http://localhost:3000').replace(/\/+$/, '');
 const TARGET_MODE = (__ENV.TARGET_MODE || 'proxy').toLowerCase();
-const DASHBOARD_MODE = (__ENV.DASHBOARD_MODE || 'ALL').toUpperCase();
+const DASHBOARD_MODE = (__ENV.DASHBOARD_MODE || 'MANUAL').toUpperCase();
+const APPLY_MODE_FILTER = (__ENV.APPLY_MODE_FILTER || 'false').toLowerCase() === 'true';
+const SUMMARY_FETCH_MODE = (__ENV.SUMMARY_FETCH_MODE || 'legacy').toLowerCase();
 const AUTH_COOKIE = __ENV.AUTH_COOKIE || '';
 const ACCESS_TOKEN = __ENV.ACCESS_TOKEN || '';
 const REFRESH_TOKEN = __ENV.REFRESH_TOKEN || '';
 
 const GOAL_LIST_LIMIT = toPositiveInt(__ENV.GOAL_LIST_LIMIT, 10);
 const MAX_GOALS = toPositiveInt(__ENV.MAX_GOALS, GOAL_LIST_LIMIT);
+const RECENT_TODO_LIMIT = toPositiveInt(__ENV.RECENT_TODO_LIMIT, 4);
 const TODO_LIMIT = toPositiveInt(__ENV.TODO_LIMIT, 10);
+const TODO_DETAIL_LIMIT_PER_GOAL = toPositiveInt(__ENV.TODO_DETAIL_LIMIT_PER_GOAL, TODO_LIMIT * 2);
 const SLEEP_SECONDS = toFloat(__ENV.SLEEP_SECONDS, 1);
+
+const DASHBOARD_PAGE_PATH = __ENV.DASHBOARD_PAGE_PATH || '/dashboard';
+const PAGE_SCENARIO_ENABLED = (__ENV.PAGE_SCENARIO_ENABLED || 'true').toLowerCase() === 'true';
 
 const goalIdFilter = (__ENV.GOAL_IDS || '')
   .split(',')
   .map((value) => Number(value.trim()))
   .filter((value) => Number.isFinite(value) && value > 0);
 
-/**
- * @description
- * 실제 대시보드의 요청을 흉내 내는 k6 스크립트입니다.
- *
- * 1) /users/me
- * 2) /users/me/progress
- * 3) /goals
- * 4) /todos?sort=LATEST
- * 5) goal 수만큼 /goals/{id}, /todos?goalId={id}&done=false, /todos?goalId={id}&done=true
- *
- * 기본값은 현재 대시보드 코드와 비슷하게 맞추고,
- * env 를 올리면 goal 이 많고 goal 별 todo 가 많을 때 API 가 버티는지 보는 용도로 쓸 수 있습니다.
- *
- * 예시:
- * k6 run perf/dashboard-http.js
- * k6 run -e BASE_URL=http://localhost:3000 -e AUTH_COOKIE="accessToken=...; refreshToken=..." perf/dashboard-http.js
- * k6 run -e GOAL_LIST_LIMIT=50 -e MAX_GOALS=50 -e TODO_LIMIT=200 -e DASHBOARD_MODE=ALL perf/dashboard-http.js
- * k6 run -e TARGET_MODE=api -e BASE_URL=https://api.example.com -e ACCESS_TOKEN=... perf/dashboard-http.js
- */
 export const options = {
   scenarios: {
-    dashboard_heavy_load: {
+    // API fan-out 테스트 (실제 데이터 호출 구조 테스트)
+    dashboard_api_heavy_load: {
       executor: 'ramping-vus',
+      exec: 'dashboardApiLoad',
       startVUs: 1,
       stages: [
         { duration: '30s', target: 100 },
@@ -51,75 +41,123 @@ export const options = {
         { duration: '60s', target: 0 },
       ],
     },
+    // 실제 페이지 SSR 요청 테스트
+    dashboard_page_ssr_load: {
+      executor: 'ramping-arrival-rate',
+      exec: 'dashboardPageLoad',
+      startRate: PAGE_SCENARIO_ENABLED ? 5 : 0,
+      timeUnit: '1s',
+      preAllocatedVUs: 50,
+      maxVUs: 300,
+      stages: PAGE_SCENARIO_ENABLED
+        ? [
+            { duration: '30s', target: 20 },
+            { duration: '30s', target: 50 },
+            { duration: '30s', target: 80 },
+            { duration: '30s', target: 100 },
+            { duration: '60s', target: 0 },
+          ]
+        : [{ duration: '10s', target: 0 }],
+    },
   },
   thresholds: {
     http_req_failed: ['rate<0.05'],
     http_req_duration: ['p(95)<2000'],
     checks: ['rate>0.95'],
+    'http_req_duration{scenario:dashboard_page_ssr_load}': ['p(95)<3000'],
   },
 };
 
-export default function dashboardLoad() {
+export function dashboardApiLoad() {
   const headers = buildHeaders();
+  const useSummaryApi = SUMMARY_FETCH_MODE === 'summary-api' && TARGET_MODE === 'proxy';
+  let goalsRes = null;
+  let recentTodos = [];
 
-  const bootstrapResponses = http.batch([
-    ['GET', buildUrl('/api/v1/users/me'), null, requestParams(headers, 'dashboard-current-user')],
-    ['GET', buildUrl('/api/v1/users/me/progress'), null, requestParams(headers, 'dashboard-progress')],
-    ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
-    ['GET', buildUrl('/api/v1/todos', { sort: 'LATEST' }), null, requestParams(headers, 'dashboard-recent-todos')],
-  ]);
+  if (useSummaryApi) {
+    // 개선된 구조 (BFF)
+    // 하나의 API에서 데이터 묶어서 가져옴
+    const [summaryRes, goalsResponse] = http.batch([
+      ['GET', buildAppUrl('/api/dashboard/summary'), null, requestParams(headers, 'dashboard-summary-api')],
+      ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
+    ]);
 
-  const [currentUserRes, progressRes, goalsRes, recentTodosRes] = bootstrapResponses;
+    goalsRes = goalsResponse;
 
-  console.log(`Users/me: ${currentUserRes.status}`);
-  console.log(`Users/me/progress: ${progressRes.status}`);
-  console.log(`Goals: ${goalsRes.status}`);
-  console.log(`Recent todos: ${recentTodosRes.status}`);
+    check(summaryRes, {
+      'dashboard summary api status is 200': (response) => response.status === 200,
+    });
+    check(goalsRes, {
+      'goals status is 200': (response) => response.status === 200,
+    });
 
-  check(currentUserRes, {
-    'current user status is 200': (response) => response.status === 200,
-  });
-  check(progressRes, {
-    'progress status is 200': (response) => response.status === 200,
-  });
-  check(goalsRes, {
-    'goals status is 200': (response) => response.status === 200,
-  });
-  check(recentTodosRes, {
-    'recent todos status is 200': (response) => response.status === 200,
-  });
+    if (summaryRes.status === 200) {
+      recentTodos = parseJson(summaryRes)?.data?.todos ?? [];
+    }
+  } else {
+    // 기존 구조 (문제)
+    // user / progress / todos 각각 따로 호출
+    const [currentUserRes, progressRes, goalsResponse, recentTodosRes] = http.batch([
+      ['GET', buildUrl('/api/v1/users/me'), null, requestParams(headers, 'dashboard-current-user')],
+      ['GET', buildUrl('/api/v1/users/me/progress'), null, requestParams(headers, 'dashboard-progress')],
+      ['GET', buildUrl('/api/v1/goals', { limit: GOAL_LIST_LIMIT }), null, requestParams(headers, 'dashboard-goals')],
+      [
+        'GET',
+        buildUrl('/api/v1/todos', { sort: 'LATEST', search: '', limit: RECENT_TODO_LIMIT }),
+        null,
+        requestParams(headers, 'dashboard-recent-todos'),
+      ],
+    ]);
 
-  if (goalsRes.status !== 200) {
+    goalsRes = goalsResponse;
+
+    check(currentUserRes, {
+      'current user status is 200': (response) => response.status === 200,
+    });
+    check(progressRes, {
+      'progress status is 200': (response) => response.status === 200,
+    });
+    check(goalsRes, {
+      'goals status is 200': (response) => response.status === 200,
+    });
+    check(recentTodosRes, {
+      'recent todos status is 200': (response) => response.status === 200,
+    });
+
+    if (recentTodosRes.status === 200) {
+      recentTodos = parseJson(recentTodosRes)?.todos ?? [];
+    }
+  }
+
+  if (goalsRes.status !== 200 && recentTodos.length === 0) {
     sleep(SLEEP_SECONDS);
     return;
   }
 
-  const body = parseJson(goalsRes);
-  const selectedGoalIds = selectGoalIds(body?.goals ?? []);
+  const goalsBody = goalsRes.status === 200 ? parseJson(goalsRes) : null;
+  const selectedGoalIds = selectGoalIds(goalsBody?.goals ?? []);
 
-  if (selectedGoalIds.length === 0) {
-    sleep(SLEEP_SECONDS);
-    return;
-  }
+  // goal마다 detail + todos 요청
+  const detailAndTodoRequests =
+    selectedGoalIds.length > 0
+      ? selectedGoalIds.flatMap((goalId) => [
+          ['GET', buildUrl(`/api/v1/goals/${goalId}`), null, requestParams(headers, 'dashboard-goal-detail')],
+          [
+            'GET',
+            buildUrl('/api/v1/todos', { goalId, done: false, limit: TODO_LIMIT, sort: 'LATEST' }),
+            null,
+            requestParams(headers, 'dashboard-goal-todos-open'),
+          ],
+          [
+            'GET',
+            buildUrl('/api/v1/todos', { goalId, done: true, limit: TODO_LIMIT, sort: 'LATEST' }),
+            null,
+            requestParams(headers, 'dashboard-goal-todos-done'),
+          ],
+        ])
+      : [];
 
-  // 하나의 목표에 총 3개 api가 나감
-  const detailAndTodoRequests = selectedGoalIds.flatMap((goalId) => [
-    ['GET', buildUrl(`/api/v1/goals/${goalId}`), null, requestParams(headers, 'dashboard-goal-detail')],
-    [
-      'GET',
-      buildUrl('/api/v1/todos', { goalId, done: false, limit: TODO_LIMIT, sort: 'LATEST' }),
-      null,
-      requestParams(headers, 'dashboard-goal-todos-open'),
-    ],
-    [
-      'GET',
-      buildUrl('/api/v1/todos', { goalId, done: true, limit: TODO_LIMIT, sort: 'LATEST' }),
-      null,
-      requestParams(headers, 'dashboard-goal-todos-done'),
-    ],
-  ]);
-
-  const detailAndTodoResponses = http.batch(detailAndTodoRequests);
+  const detailAndTodoResponses = detailAndTodoRequests.length > 0 ? http.batch(detailAndTodoRequests) : [];
 
   for (const response of detailAndTodoResponses) {
     check(response, {
@@ -127,7 +165,66 @@ export default function dashboardLoad() {
     });
   }
 
+  const todoDetailIds = new Set();
+
+  // todo마다 또 detail 호출
+  for (let i = 0; i < detailAndTodoResponses.length; i += 3) {
+    const todoOpenRes = detailAndTodoResponses[i + 1];
+    const todoDoneRes = detailAndTodoResponses[i + 2];
+
+    const openTodos = todoOpenRes?.status === 200 ? (parseJson(todoOpenRes)?.todos ?? []) : [];
+    const doneTodos = todoDoneRes?.status === 200 ? (parseJson(todoDoneRes)?.todos ?? []) : [];
+
+    const todoIds = [...openTodos, ...doneTodos]
+      .map((todo) => todo?.id)
+      .filter((id) => Number.isFinite(id) && id > 0)
+      .slice(0, TODO_DETAIL_LIMIT_PER_GOAL);
+
+    for (const todoId of todoIds) {
+      todoDetailIds.add(todoId);
+    }
+  }
+
+  for (const todoId of recentTodos.map((todo) => todo?.id).filter((id) => Number.isFinite(id) && id > 0)) {
+    todoDetailIds.add(todoId);
+  }
+
+  const todoDetailRequests = Array.from(todoDetailIds).map((todoId) => [
+    'GET',
+    buildUrl(`/api/v1/todos/${todoId}`),
+    null,
+    requestParams(headers, 'dashboard-todo-detail'),
+  ]);
+
+  if (todoDetailRequests.length > 0) {
+    const todoDetailResponses = http.batch(todoDetailRequests);
+
+    for (const response of todoDetailResponses) {
+      check(response, {
+        'todo detail request status is 200': (res) => res.status === 200,
+      });
+    }
+  }
+
   sleep(SLEEP_SECONDS);
+}
+
+export function dashboardPageLoad() {
+  if (!PAGE_SCENARIO_ENABLED) {
+    sleep(1);
+    return;
+  }
+
+  const res = http.get(`${BASE_URL}${DASHBOARD_PAGE_PATH}`, requestParams(buildHeaders(), 'dashboard-page-ssr'));
+
+  check(res, {
+    'dashboard page status is 200': (response) => response.status === 200,
+    'dashboard page ttfb < 1500ms': (response) => response.timings.waiting < 1500,
+  });
+}
+
+export default function dashboardLoad() {
+  dashboardApiLoad();
 }
 
 function buildHeaders() {
@@ -141,6 +238,7 @@ function buildHeaders() {
 
   if (TARGET_MODE === 'proxy') {
     const cookies = [];
+
     if (ACCESS_TOKEN) cookies.push(`accessToken=${ACCESS_TOKEN}`);
     if (REFRESH_TOKEN) cookies.push(`refreshToken=${REFRESH_TOKEN}`);
     if (AUTH_COOKIE) cookies.push(AUTH_COOKIE);
@@ -160,7 +258,13 @@ function buildUrl(pathname, params) {
   return queryString ? `${BASE_URL}${normalizedPath}?${queryString}` : `${BASE_URL}${normalizedPath}`;
 }
 
+function buildAppUrl(pathname, params) {
+  const queryString = toQueryString(params);
+  return queryString ? `${BASE_URL}${pathname}?${queryString}` : `${BASE_URL}${pathname}`;
+}
+
 function toProxyPath(pathname) {
+  // /api/v1/* -> /api/proxy/* mapping for Next.js BFF route.
   return pathname.replace(/^\/api\/v1\/?/, '/api/proxy/');
 }
 
@@ -171,18 +275,22 @@ function requestParams(headers, name) {
       name,
       dashboard_mode: DASHBOARD_MODE,
       target_mode: TARGET_MODE,
+      summary_fetch_mode: SUMMARY_FETCH_MODE,
     },
   };
 }
 
 function selectGoalIds(goals) {
   const goalsWithId = goals.filter((goal) => goal?.id);
+
   const modeFilteredGoals =
-    DASHBOARD_MODE === 'MANUAL' || DASHBOARD_MODE === 'GITHUB'
+    APPLY_MODE_FILTER && (DASHBOARD_MODE === 'MANUAL' || DASHBOARD_MODE === 'GITHUB')
       ? goalsWithId.filter((goal) => goal.source === DASHBOARD_MODE)
       : goalsWithId;
+
   const filteredGoals =
     goalIdFilter.length > 0 ? modeFilteredGoals.filter((goal) => goalIdFilter.includes(goal.id)) : modeFilteredGoals;
+
   const limitedGoals = MAX_GOALS > 0 ? filteredGoals.slice(0, MAX_GOALS) : filteredGoals;
 
   return limitedGoals.map((goal) => goal.id);

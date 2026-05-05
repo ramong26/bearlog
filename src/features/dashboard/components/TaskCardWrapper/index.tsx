@@ -1,34 +1,48 @@
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
 import TaskCard from '@/shared/components/TaskCard';
 
-import { ApiError, TodoResponse } from '@/shared/lib/api';
+import { ApiError } from '@/shared/lib/api';
 import { usePatchTodo, usePatchTodoFavorite } from '@/shared/lib/query/mutations';
+import { todoQueries } from '@/shared/lib/query/queryKeys';
 import { useToastStore } from '@/shared/stores/useToastStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 
-export default function TaskCardWrapper({ item, mode }: { item: TodoResponse; mode: 'todo' | 'done' }) {
+export default function TaskCardWrapper({
+  item,
+  mode,
+}: {
+  item: { id: number; favorite?: boolean };
+  mode: 'todo' | 'done';
+}) {
   const { showToast } = useToastStore();
   const { t } = useLanguage();
+
+  // 할 일 상세 정보를 가져오기 위한 query 훅
+  const { data: todoDetail } = useQuery({
+    ...todoQueries.detail(item.id),
+    enabled: !!item.id,
+  });
 
   // 할 일 상태 업데이트를 위한 mutation 훅
   const patchTodo = usePatchTodo(item.id);
   const handleCheckboxClick = async () => {
-    if (item?.id === undefined) return;
+    if (todoDetail?.id === undefined) return;
 
     // GitHub 연동 todo는 완료 후 되돌리기 불가 — 백엔드는 source를 "github"(소문자)로 반환
-    const isGithubTodo = item.source === 'github';
-    if (isGithubTodo && item.done) return;
+    const isGithubTodo = todoDetail.source === 'github';
+    if (isGithubTodo && todoDetail.done) return;
 
     try {
       await patchTodo.mutateAsync({
-        done: !item.done,
+        done: !todoDetail.done,
       });
-      if (!item.done) {
+      if (!todoDetail.done) {
         if (isGithubTodo) {
           const githubMessage =
-            item.type === 'ISSUE'
+            todoDetail.type === 'ISSUE'
               ? '할 일을 완료했습니다. GitHub Issue가 close됩니다.'
               : '할 일을 완료했습니다. GitHub PR이 merge됩니다.';
           showToast(githubMessage);
@@ -39,11 +53,11 @@ export default function TaskCardWrapper({ item, mode }: { item: TodoResponse; mo
         showToast(t.mutations.todoUncompleted);
       }
     } catch (error) {
-      if (isGithubTodo && !item.done) {
+      if (isGithubTodo && !todoDetail.done) {
         const message =
           error instanceof ApiError
             ? error.message
-            : item.type === 'ISSUE'
+            : todoDetail.type === 'ISSUE'
               ? 'GitHub Issue close에 실패했습니다. 잠시 후 다시 시도해주세요.'
               : 'GitHub PR merge에 실패했습니다. 잠시 후 다시 시도해주세요.';
         showToast(message, 'fail');
@@ -73,7 +87,7 @@ export default function TaskCardWrapper({ item, mode }: { item: TodoResponse; mo
     });
   };
 
-  if (!item) return null;
+  if (!todoDetail) return null;
   return (
     <motion.div
       layout
@@ -88,7 +102,7 @@ export default function TaskCardWrapper({ item, mode }: { item: TodoResponse; mo
     >
       <TaskCard
         variant={mode === 'todo' ? 'green' : 'default'}
-        todo={item}
+        todo={todoDetail}
         onCheckboxClick={handleCheckboxClick}
         onStareClick={handleStarToggle}
       />

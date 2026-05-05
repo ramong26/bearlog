@@ -90,8 +90,8 @@ function FavoriteTodoFilter({ todos, selectedFilter, setSelectedFilter }: Favori
             key={button.id}
             className={`cursor-pointer overflow-hidden rounded-2xl px-4 py-2 text-base font-bold text-ellipsis whitespace-nowrap transition-all duration-200 ${
               selectedFilter === button.label
-                ? 'text-bearlog-600 bg-bearlog-500/20'
-                : 'hover:text-bearlog-600 hover:bg-bearlog-500/20 text-gray-400'
+                ? 'text-bearlog-500 bg-bearlog-500/20'
+                : 'hover:text-bearlog-500 hover:bg-bearlog-500/20 text-gray-400'
             }`}
             onClick={() => setSelectedFilter(button.label)}
           >
@@ -171,16 +171,18 @@ function FavoriteTodoFetcher({
   ];
 
   return (
-    <section className="flex flex-col gap-5 rounded-4xl bg-white p-4 md:p-8">
+    <section className="flex flex-col gap-5 rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8 w-full max-w-180 h-204">
       <FavoriteTodoDropdownGoal
         selectedValue={selectedGoal}
         onSelectItem={(item) => setSelectedGoal(item.value)}
         items={goalItems}
       />
-      <div className="max-h-[620px] overflow-y-auto">
-        <div className="flex flex-col gap-4">
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <div className="flex flex-1 flex-col gap-4">
           {todos.length === 0 ? (
-            <Empty>{t.allTodo.empty}</Empty>
+            <div className="flex flex-1 items-center justify-center">
+              <Empty>{t.allTodo.empty}</Empty>
+            </div>
           ) : (
             todos.map((todo) => <TaskCardWrapper key={todo.id} item={todo} mode="todo" />)
           )}

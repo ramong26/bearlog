@@ -54,7 +54,7 @@ export default function NoteListHeader({
           <Button
             variant="primary"
             onClick={onCreateNote}
-            className="ml-2 flex shrink-0 gap-[6px] px-5 py-3 md:ml-0 md:px-[17px] md:py-[10px] lg:px-[18px] lg:py-[10px]"
+            className="ml-2 flex shrink-0 gap-[6px] px-5 py-3 dark:text-gray-850 md:ml-0 md:px-[17px] md:py-[10px] lg:px-[18px] lg:py-[10px]"
           >
             <PlusIcon size={20} />
             <span className="text-sm font-semibold transition-all duration-200 lg:text-base">{t.note.registerButton}</span>

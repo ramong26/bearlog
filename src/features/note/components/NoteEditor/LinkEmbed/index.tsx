@@ -39,7 +39,7 @@ export default function LinkEmbed({ url, onRemove, readOnly = false }: LinkEmbed
       {showPreview && <LinkEmbedPreview url={url} onClose={() => setShowPreview(false)} />}
       <button
         type="button"
-        className="flex w-full cursor-pointer flex-col gap-1 rounded-[14px] bg-[#FAFAFA] px-4 py-[14px] text-left"
+        className="flex w-full cursor-pointer flex-col gap-1 rounded-[14px] bg-[#FAFAFA] dark:bg-[#434343] px-4 py-[14px] text-left"
         onClick={() => setShowPreview((prev) => !prev)}
       >
         {/* 상단 — 파비콘 + 사이트명 + 삭제 */}
@@ -59,7 +59,7 @@ export default function LinkEmbed({ url, onRemove, readOnly = false }: LinkEmbed
               />
             </div>
             {/* 사이트 제목 */}
-            <p className="text-sm font-medium tracking-[-0.42px] text-[#333]">{getSiteName(url)}</p>
+            <p className="text-sm font-medium tracking-[-0.42px] text-gray-700 dark:text-white">{getSiteName(url)}</p>
           </div>
           {/* 삭제 버튼 */}
           {!readOnly && (
@@ -68,7 +68,7 @@ export default function LinkEmbed({ url, onRemove, readOnly = false }: LinkEmbed
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onRemove(); } }}
-              className="cursor-pointer text-[#A4A4A4] transition-colors hover:text-[#333]"
+              className="cursor-pointer text-gray-400 transition-colors hover:text-gray-700 dark:text-white dark:hover:text-gray-300"
             >
               <XIcon size={20} />
             </div>
@@ -76,7 +76,7 @@ export default function LinkEmbed({ url, onRemove, readOnly = false }: LinkEmbed
         </div>
 
         {/* 하단 — URL */}
-        <p className="ml-[5px] truncate text-xs font-normal text-[#A4A4A4]">{url}</p>
+        <p className="ml-[5px] truncate text-xs font-normal text-gray-400">{url}</p>
       </button>
     </>
   );

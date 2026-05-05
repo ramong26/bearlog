@@ -61,17 +61,17 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
   const { t } = useLanguage();
   const { showToast } = useToastStore();
   const mode = useTodoModeStore((state) => state.mode);
-
   const { mutate } = usePostGoal();
   const { mutate: logout } = usePostLogout();
-
   const { openTodoCreateModal } = useTodoCreateModal();
   const { openGithubTodoCreateModal } = useGithubTodoCreateModal();
-
   const selectedGoalId = getSelectedGoalId(pathname, goals, mode);
 
   const handleAddTodo = () => {
-    if (!selectedGoalId) return;
+    if (goals.length === 0 || !selectedGoalId) {
+      showToast(t.dashboard.noGoal, 'fail');
+      return;
+    }
 
     const selectedGoal = goals.find((goal) => goal.id === selectedGoalId);
     if (!selectedGoal) return;
@@ -110,7 +110,7 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
       )}
       <div
         className={clsx(
-          'flex flex-col rounded-tr-[32px] rounded-br-[32px] bg-white transition-all duration-300',
+          'flex flex-col rounded-tr-[32px] rounded-br-[32px] bg-white transition-all duration-300 dark:bg-gray-800',
           isOpen ? 'p-4' : 'min-w-[80px] gap-8 px-6 py-8',
           isOpen &&
             (isTablet
@@ -145,7 +145,6 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
                 src={'/image/bearlog-icon.png'}
                 alt="Logo"
                 fill
-                sizes={isOpen ? '48px' : '32px'}
                 className={`object-contain ${isOpen ? 'h-12 w-12' : 'h-8 w-8'}`}
               />
             </div>
@@ -156,7 +155,7 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
               }`}
               aria-hidden={!isOpen}
             >
-              <h2 className="pl-1 text-2xl leading-[42px] font-semibold whitespace-nowrap text-gray-800 lg:text-3xl">
+              <h2 className="pl-1 text-2xl leading-[42px] font-semibold whitespace-nowrap text-gray-800 lg:text-3xl dark:text-white">
                 Bearlog
               </h2>
             </div>
@@ -173,20 +172,20 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
               ))}
             </Accordion.Root>
 
-            <div className="flex w-full flex-col">
+            <div className="flex w-full flex-col gap-3">
               <button
                 onClick={() => openModal(<SettingsModal />)}
-                className="flex items-center justify-start gap-[10px] rounded-[20px] px-[14px] py-[10px] transition-all duration-100 hover:bg-gray-100"
+                className="dark:hover:bg-gray-750 flex h-14 items-center justify-start gap-[10px] rounded-[20px] bg-white px-[14px] py-[10px] transition-all duration-100 hover:bg-gray-100 dark:bg-gray-700"
               >
                 <SettingsIcon color="#BBBBBB" size={24} />
-                <span className="text-lg font-semibold text-gray-500">{t.sidebar.settings}</span>
+                <span className="text-lg font-semibold text-gray-500 dark:text-gray-500">{t.sidebar.settings}</span>
               </button>
               <button
                 onClick={() => logout()}
-                className="flex items-center justify-start gap-[10px] rounded-[20px] px-[14px] py-[10px] transition-all duration-100 hover:bg-gray-100"
+                className="dark:hover:bg-gray-750 flex h-14 items-center justify-start gap-[10px] rounded-[20px] bg-white px-[14px] py-[10px] transition-all duration-100 hover:bg-gray-100 dark:bg-gray-700"
               >
                 <LogOutIcon color="#BBBBBB" size={24} />
-                <span className="text-lg font-semibold text-gray-500">{t.sidebar.logout}</span>
+                <span className="text-lg font-semibold text-gray-500 dark:text-gray-500">{t.sidebar.logout}</span>
               </button>
             </div>
           </div>
@@ -211,25 +210,26 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
               className="group bg-bearlog-500 flex w-full flex-col items-center justify-center gap-2 rounded-[32px] px-2 py-4 transition-all duration-200 hover:shadow-lg lg:px-[22.5px] lg:py-8"
             >
               <FlagIcon
-                color="#FFFFFF"
-                className="h-8 w-8 transition-transform group-hover:scale-110 lg:h-10 lg:w-10"
+                className="dark:text-gray-850 h-8 w-8 text-white transition-transform group-hover:scale-110 lg:h-10 lg:w-10"
                 size={40}
               />
-              <span className="text-md cursor-pointer font-semibold text-[#ffffff] transition-all group-hover:font-bold lg:text-lg">
+              <span className="text-md dark:text-gray-850 cursor-pointer font-semibold text-[#ffffff] transition-all group-hover:font-bold lg:text-lg">
                 {t.sidebar.newGoal}
               </span>
             </button>
             <button
               onClick={handleAddTodo}
-              disabled={!selectedGoalId}
-              className="group border-bearlog-500 flex w-full flex-col items-center justify-center gap-2 rounded-[32px] border bg-[#ffffff] px-2 py-4 transition-all duration-200 hover:shadow-lg lg:px-[22.5px] lg:py-8"
+              aria-disabled={!selectedGoalId}
+              className={`group border-bearlog-500 flex w-full flex-col items-center justify-center gap-2 rounded-[32px] border bg-[#ffffff] px-2 py-4 transition-all duration-200 hover:shadow-lg lg:px-[22.5px] lg:py-8 dark:bg-gray-700 ${
+                !selectedGoalId ? 'opacity-50' : ''
+              }`}
             >
               <CopyCheckIcon
                 color="#00C87F"
                 className="h-8 w-8 transition-transform group-hover:scale-110 lg:h-10 lg:w-10"
                 size={40}
               />
-              <span className="text-md text-bearlog-600 cursor-pointer font-semibold transition-all group-hover:font-bold lg:text-lg">
+              <span className="text-md text-bearlog-600 dark:text-bearlog-500 cursor-pointer font-semibold transition-all group-hover:font-bold lg:text-lg">
                 {t.sidebar.newTodo}
               </span>
             </button>
@@ -238,7 +238,7 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
           <div className="flex w-full justify-between gap-2">
             <Link
               href="/mypage"
-              className={`w-full items-center justify-start gap-[8px] rounded-[999px] border border-gray-200 px-[20px] py-[12px] lg:pr-[42px] lg:pl-[12px] ${isOpen ? 'flex' : 'hidden'}`}
+              className={`dark:bg-gray-850 w-full items-center justify-start gap-[8px] rounded-[999px] border border-gray-200 px-[20px] py-[12px] lg:pr-[42px] lg:pl-[12px] dark:border-gray-500 ${isOpen ? 'flex' : 'hidden'}`}
             >
               <Image
                 src={user?.profileImageUrl || '/image/default-profile.png'}
@@ -249,7 +249,9 @@ function SidebarDesktopTablet({ user, isTablet }: SidebarDesktopTabletProps) {
               />
               <div className="flex flex-col items-start">
                 <div className="flex items-center justify-center">
-                  <span className="w-15 truncate text-sm font-medium lg:w-full">{user?.nickname}</span>
+                  <span className="w-15 truncate text-sm font-medium lg:w-full dark:text-gray-300">
+                    {user?.nickname}
+                  </span>
                   <ChevronRightIcon size={16} color="#A0A0A0" className="hidden lg:block" />
                 </div>
                 <span className="hidden w-35 truncate text-sm font-medium text-[#A0A0A0] lg:block">{user?.email}</span>
@@ -292,14 +294,32 @@ export function SidebarMenuEntry({
   pathname: string;
   onClose?: () => void;
 }) {
+  const { showToast } = useToastStore();
+  const { t } = useLanguage();
   const isActive = isMenuActive(menu, pathname);
+  const isGoalMenuWithoutItems = menu.href === '/goal' && (!menu.subMenus || menu.subMenus.length === 0);
 
   if (!menu.subMenus?.length) {
+    if (isGoalMenuWithoutItems) {
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            showToast(t.dashboard.noGoal, 'fail');
+          }}
+          className="group flex h-14 w-full cursor-pointer items-center justify-start gap-[8px] rounded-[20px] bg-white px-[12px] py-[10px] transition-all duration-200 lg:px-[16px] lg:py-[14px] dark:bg-gray-700"
+        >
+          <span className="text-gray-300 transition-all duration-200">{menu.icon}</span>
+          <span className="text-lg font-semibold text-gray-700 transition-all dark:text-gray-400">{menu.name}</span>
+        </button>
+      );
+    }
+
     return (
       <Link
         href={menu.href}
         onClick={onClose}
-        className="group flex w-full items-center justify-start gap-[8px] rounded-[20px] px-[12px] py-[10px] transition-all duration-200 lg:px-[16px] lg:py-[14px]"
+        className="group flex h-14 w-full items-center justify-start gap-2 rounded-[20px] bg-white px-[12px] py-[10px] transition-all duration-200 lg:px-[16px] lg:py-[14px] dark:bg-gray-700"
       >
         <span
           className={`transition-all duration-200 ${
@@ -309,7 +329,7 @@ export function SidebarMenuEntry({
           {menu.icon}
         </span>
         <span
-          className={`text-lg transition-all ${isActive ? 'font-bold text-[#339C76]' : 'font-semibold text-gray-700 group-hover:font-bold group-hover:text-[#339C76]'}`}
+          className={`text-lg transition-all ${isActive ? 'font-bold text-[#339C76]' : 'font-semibold text-gray-700 group-hover:font-bold group-hover:text-[#339C76] dark:text-gray-300'}`}
         >
           {menu.name}
         </span>
@@ -318,7 +338,7 @@ export function SidebarMenuEntry({
   }
 
   return (
-    <Accordion.Item value={menu.name} className="flex w-full flex-col gap-2">
+    <Accordion.Item value={menu.name} className="flex w-full flex-col data-[state=open]:gap-2">
       <AccordionTrigger menu={menu} isActive={isActive} />
       <Accordion.Content
         forceMount
@@ -333,15 +353,15 @@ export function SidebarMenuEntry({
                   key={subMenu.href}
                   href={subMenu.href}
                   onClick={onClose}
-                  className={`group flex w-[calc(100%-1rem)] items-center justify-start gap-2 rounded-[20px] px-4 py-1 transition-all duration-200 hover:bg-[#F2FBF7] lg:px-6 lg:py-2 ${
-                    isSubMenuActive ? 'bg-[#F2FBF7]' : ''
+                  className={`group dark:hover:bg-gray-750 flex w-[calc(100%-1rem)] items-center justify-start gap-2 rounded-[20px] px-4 py-1 transition-all duration-200 hover:bg-[#F2FBF7] lg:px-6 lg:py-2 ${
+                    isSubMenuActive ? 'dark:bg-gray-750 bg-[#F2FBF7]' : ''
                   }`}
                 >
                   <span
                     className={`text-sm transition-all ${
                       isSubMenuActive
-                        ? 'font-bold text-[#339C76]'
-                        : 'font-semibold text-gray-700 group-hover:text-[#339C76]'
+                        ? 'dark:text-bearlog-500 font-bold text-[#339C76]'
+                        : 'dark:group-hover:text-bearlog-500 font-semibold text-gray-700 group-hover:text-[#339C76] dark:text-gray-300'
                     }`}
                   >
                     {subMenu.name}
@@ -364,11 +384,11 @@ function AccordionTrigger({ children, menu, isActive, ...props }: AccordionTrigg
   return (
     <Accordion.Trigger
       {...props}
-      className={`group flex w-full items-center justify-start gap-[8px] rounded-[20px] px-[12px] py-[10px] transition-all duration-200 lg:px-[16px] lg:py-[14px]`}
+      className={`group flex h-14 w-full items-center justify-start gap-2 rounded-[20px] bg-white px-[12px] py-[10px] transition-all duration-200 lg:px-[16px] lg:py-[14px] dark:bg-gray-700`}
     >
       <span className={isActive ? 'text-[#339C76]' : 'text-gray-300 group-hover:text-[#339C76]'}>{menu.icon}</span>
       <span
-        className={`text-lg font-semibold transition-all ${isActive ? 'font-bold text-[#339C76]' : 'text-gray-700 group-hover:font-bold group-hover:text-[#339C76]'}`}
+        className={`text-lg font-semibold transition-all ${isActive ? 'font-bold text-[#339C76]' : 'text-gray-700 group-hover:font-bold group-hover:text-[#339C76] dark:text-gray-300'}`}
       >
         {menu.name}
       </span>

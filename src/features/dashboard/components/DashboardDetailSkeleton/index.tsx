@@ -7,9 +7,7 @@ export default function DashboardDetailSkeleton() {
       </div>
 
       <section className="flex flex-col gap-6">
-        {[1, 2].map((idx) => (
-          <article key={idx} className="h-96 animate-pulse rounded-[40px] bg-gray-200 p-6 lg:px-8 lg:py-6" />
-        ))}
+        <article className="h-96 animate-pulse rounded-[40px] bg-gray-200 p-6 lg:px-8 lg:py-6" />
       </section>
     </section>
   );

@@ -34,11 +34,11 @@ export default function CalendarGrid({ year, month, todos, selectedDay, onSelect
   return (
     <div className="w-full overflow-hidden last:rounded-b-4xl">
       {/* 요일 헤더 */}
-      <div className="border-border-secondary grid grid-cols-7 border-t border-b">
+      <div className="border-border-secondary dark:border-[#585858] grid grid-cols-7 border-t border-b">
         {DAYS.map((d) => (
           <div
             key={d}
-            className="border-border-secondary border-r py-2 text-center text-xs font-medium text-gray-500 last:border-r-0"
+            className="border-border-secondary dark:border-[#585858] border-r py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 last:border-r-0"
           >
             {d}
           </div>

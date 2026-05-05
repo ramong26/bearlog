@@ -20,6 +20,7 @@ export class ApiError extends Error {
 }
 const isClient = typeof window !== 'undefined';
 const ACCESS_TOKEN_COOKIE = 'accessToken';
+const serverApiBaseUrl = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? '').replace(/\/+$/, '');
 
 // 서버에서 쿠키를 읽어오는 함수
 const getServerAccessToken = async () => {
@@ -38,17 +39,28 @@ export const apiRequest = async <TResponse, TBody = unknown>(
   url: string,
   { method = 'GET', params, body, headers, signal, cache = 'no-store', next }: ApiRequestOptions<TBody> = {},
 ): Promise<TResponse> => {
-  const cleanParams = params
-    ? Object.fromEntries(Object.entries(params).filter(([_, v]) => v !== undefined && v !== null))
-    : undefined;
-  const queryString = cleanParams ? `?${new URLSearchParams(cleanParams as Record<string, string>)}` : '';
+  const searchParams = new URLSearchParams();
+  // tags=a&tags=b 형식을 지원하기 위해 배열 처리 로직 추가
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      if (Array.isArray(value)) {
+        value.forEach((v) => searchParams.append(key, String(v)));
+      } else {
+        searchParams.set(key, String(value));
+      }
+    });
+  }
+  const queryString = searchParams.toString() ? '?' + searchParams.toString() : '';
 
-  const cleanUrl = isClient ? url.replace(/^\/api\/v1\//, '/') : url;
+  const cleanUrl = isClient ? url.replace(/^\/api\/v1\/?/, '/') : url;
 
   // 클라이언트 요청이면 프록시 경로를 사용하고, 서버 요청이면 API_BASE_URL을 사용
-  const fullUrl = isClient
-    ? `/api/proxy${cleanUrl}${queryString}`
-    : `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}${queryString}`;
+  if (!isClient && !serverApiBaseUrl) {
+    throw new ApiError(500, 'API_BASE_URL is not defined in environment variables');
+  }
+
+  const fullUrl = isClient ? `/api/proxy${cleanUrl}${queryString}` : `${serverApiBaseUrl}${url}${queryString}`;
 
   // 서버 요청이면 쿠키에서 액세스 토큰을 가져와서 Authorization 헤더에 추가
   const requestHeaders = new Headers({
@@ -74,15 +86,24 @@ export const apiRequest = async <TResponse, TBody = unknown>(
     next,
   }).then(async (response) => {
     if (!response.ok) {
-      let errorMessage = response.statusText || `HTTP ${response.status}`;
+      let errorMessage = response.statusText || 'HTTP ' + response.status;
+      let errorCode: string | undefined;
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
+        errorCode = errorData.code;
       } catch {
-        // JSON 파싱 실패 시 무시
+        // 에러 본문 파싱 실패 시 무시
       }
-      throw new ApiError(response.status, errorMessage);
+      throw new ApiError(response.status, errorMessage, errorCode);
     }
-    return response.json() as Promise<TResponse>;
+
+    if (response.status === 204) return undefined as TResponse;
+
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      return response.json() as Promise<TResponse>;
+    }
+    return response.text() as unknown as TResponse;
   });
 };

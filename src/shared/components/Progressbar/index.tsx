@@ -28,7 +28,7 @@ export default function Progressbar({ progress, number = true }: ProgressbarProp
 
   return (
     <div className="flex w-full items-center gap-[8px] transition-all duration-300 ease-in-out md:gap-[10px]">
-      <div className="h-2 w-full overflow-hidden rounded bg-[#E9E9E9]">
+      <div className="h-2 w-full overflow-hidden rounded bg-[#E9E9E9] dark:bg-gray-700">
         <motion.div
           className="bg-bearlog-500 h-full rounded"
           animate={{ width: `${safeProgress}%` }}

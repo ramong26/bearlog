@@ -40,7 +40,7 @@ export default function EditorContent({
         <>
           {linkUrl && <LinkEmbed url={linkUrl} onRemove={() => {}} readOnly />}
           <div
-            className="h-full w-full flex-1 cursor-default text-base leading-6 font-normal tracking-[-0.02em] text-gray-700"
+            className="h-full w-full flex-1 cursor-default text-base leading-6 font-normal tracking-[-0.02em] text-gray-700 dark:text-white"
             dangerouslySetInnerHTML={{ __html: content ?? '' }}
           />
         </>
@@ -58,7 +58,7 @@ export default function EditorContent({
               '[&_.ProseMirror]:font-normal',
               '[&_.ProseMirror]:leading-6',
               '[&_.ProseMirror]:tracking-[-0.02em]',
-              '[&_.ProseMirror]:text-gray-700',
+              '[&_.ProseMirror]:text-gray-700 dark:[&_.ProseMirror]:text-white',
               '[&_.ProseMirror_ul]:list-disc',
               '[&_.ProseMirror_ul]:pl-5',
               '[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]',

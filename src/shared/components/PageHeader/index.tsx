@@ -37,7 +37,7 @@ export function PageHeader({ id, title, count, className = '' }: PageHeaderProps
       id={id}
       className={twMerge(
         clsx(
-          'flex items-center gap-2 truncate text-black',
+          'flex items-center gap-2 truncate text-black dark:text-white',
           'font-semibold tracking-[-0.03em]',
           'text-base leading-6',
           'md:text-xl md:leading-7.5',

@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       {process.env.NODE_ENV === 'development' ? (
         <head>
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}
@@ -43,6 +43,12 @@ export default function RootLayout({
         </head>
       ) : null}
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=JSON.parse(localStorage.getItem('theme'));if(t&&t.state&&t.state.isDark)document.documentElement.classList.add('dark');}catch(e){}})();",
+          }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>

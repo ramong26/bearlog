@@ -14,7 +14,7 @@ export default function LinkInput({ value, onChange }: LinkInputPros) {
   const { t } = useLanguage();
 
   return (
-    <div className="flex h-11 w-full items-center justify-between rounded-xl border border-dashed border-[#CCC] bg-[#FAFAFA] p-3 md:h-14 md:rounded-2xl md:p-4">
+    <div className="flex h-11 w-full items-center justify-between rounded-xl border border-[#CCC] dark:border-[#7E7E7E] bg-[#FAFAFA] dark:bg-gray-850 p-3 md:h-14 md:rounded-2xl md:p-4">
       <div className="flex flex-1 items-center gap-2">
         <Link2 size={20} className="shrink-0 -rotate-45 stroke-[#737373] md:h-6 md:w-6" />
         <input
@@ -22,7 +22,7 @@ export default function LinkInput({ value, onChange }: LinkInputPros) {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={t.todo.linkPlaceholder}
-          className="w-full flex-1 border-none bg-transparent p-0 text-sm text-[#333] placeholder:text-[#737373] focus:outline-none md:text-base"
+          className="w-full flex-1 border-none bg-transparent p-0 text-sm text-[#333] dark:text-white placeholder:text-[#737373] dark:placeholder:text-gray-400 focus:outline-none md:text-base"
         />
       </div>
       {/* 링크 입력 후 삭제 버튼 */}

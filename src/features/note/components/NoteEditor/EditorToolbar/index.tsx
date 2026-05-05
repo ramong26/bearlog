@@ -25,7 +25,7 @@ export default function EditorToolbar({ editor, onLinkUrlChange }: EditorToolbar
   return (
     <div
       className={clsx(
-        'flex h-11 w-full items-center bg-[#FAFAFA] px-4 py-1.5 text-slate-500',
+        'flex h-11 w-full items-center bg-[#FAFAFA] dark:bg-[#3E3E3E] px-4 py-1.5 text-slate-500 dark:text-gray-500',
         !isMobile && 'rounded-[18px]',
       )}
     >

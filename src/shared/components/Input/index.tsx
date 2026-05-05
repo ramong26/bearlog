@@ -29,10 +29,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           onChange={onChange}
           disabled={disabled}
           className={twMerge(
-            'h-[56px] w-full rounded-2xl border border-gray-200',
-            'px-6 text-base text-[#333333]',
-            'placeholder:text-[#737373]',
-            'bg-white outline-none',
+            'h-[56px] w-full rounded-2xl border border-border-input',
+            'px-6 text-base text-text-input',
+            'placeholder:text-text-muted',
+            'bg-bg-input outline-none',
             disabled ? 'cursor-not-allowed opacity-50' : '',
             className,
           )}
@@ -42,7 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-1/2 right-5 -translate-y-1/2 text-[#737373]"
+            className="absolute top-1/2 right-5 -translate-y-1/2 text-gray-500"
             aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
           >
             {showPassword ? <Eye size={22} /> : <EyeOff size={22} />}

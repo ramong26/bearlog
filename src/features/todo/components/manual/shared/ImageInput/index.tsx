@@ -52,9 +52,9 @@ export default function ImageInput({ image, onChange }: ImageInput) {
               onChange(null);
               if (fileInputRef.current) fileInputRef.current.value = '';
             }}
-            className="absolute top-[10px] right-[10px] flex size-[18px] cursor-pointer items-center justify-center rounded-full border border-[#CCC] bg-white"
+            className="absolute top-[10px] right-[10px] flex size-[18px] cursor-pointer items-center justify-center rounded-full border border-gray-300 bg-white"
           >
-            <XIcon size={10} className="stroke-[#A4A4A4]" />
+            <XIcon size={10} className="stroke-gray-400" />
           </button>
         </div>
       ) : (
@@ -62,20 +62,20 @@ export default function ImageInput({ image, onChange }: ImageInput) {
           type="button"
           disabled={isUploading}
           onClick={() => fileInputRef.current?.click()}
-          className="flex h-[101px] w-full cursor-pointer flex-col items-center justify-center gap-[2px] rounded-2xl border border-dashed border-[#CCC] bg-[#FAFAFA] disabled:cursor-not-allowed"
+          className="flex h-[101px] w-full cursor-pointer flex-col items-center justify-center gap-[2px] rounded-2xl border border-gray-300 bg-gray-50 disabled:cursor-not-allowed dark:border-[#7E7E7E] dark:bg-gray-850"
         >
           {isUploading ? (
-            <LoaderIcon size={24} className="animate-spin stroke-[#A4A4A4]" />
+            <LoaderIcon size={24} className="animate-spin stroke-gray-400" />
           ) : (
             <>
-              <ImageUpIcon size={24} className="stroke-[#A4A4A4]" />
-              <p className="text-base font-medium text-[#A4A4A4]">{t.todo.imageAttach}</p>
+              <ImageUpIcon size={24} className="stroke-gray-400" />
+              <p className="text-base font-medium text-gray-400">{t.todo.imageAttach}</p>
             </>
           )}
         </button>
       )}
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleSelectImage} />
-      <p className="px-1 text-xs font-medium text-[#A4A4A4] md:text-sm">{t.todo.imageLimit}</p>
+      <p className="px-1 text-xs font-medium text-gray-400 md:text-sm dark:text-white">{t.todo.imageLimit}</p>
     </>
   );
 }

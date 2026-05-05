@@ -10,12 +10,12 @@ export type Language = 'ko' | 'en' | 'zh' | 'ja';
 
 const locales = { ko, en, zh, ja };
 
-type Translations = typeof ko;
+export type TranslationType = typeof ko;
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: Translations;
+  t: TranslationType;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);

@@ -7,10 +7,14 @@ import PageHeader from '@/shared/components/PageHeader';
 import Input from '@/shared/components/Input';
 import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
-import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/shared/components/LoadingSpinner';
 
 import { userQueries } from '@/shared/lib/query/queryKeys';
-import { usePatchCurrentUser, usePatchCurrentUserPassword } from '@/shared/lib/query/mutations';
+import {
+  useDeleteGithubConnection,
+  usePatchCurrentUser,
+  usePatchCurrentUserPassword,
+} from '@/shared/lib/query/mutations';
 import { validatePassword, validatePasswordConfirm } from '@/shared/lib/validation';
 import { useBreakpoint } from '@/shared/hooks/useBreakPoint';
 import { useModalStore } from '@/shared/stores/useModalStore';
@@ -20,7 +24,9 @@ import { fetchUsers } from '@/shared/lib/api/fetchUsers';
 import { fetchAuth } from '@/shared/lib/api/fetchAuth';
 import { fetchImages } from '@/shared/lib/api/fetchImages';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
-import LoadingSpinner from '@/shared/components/LoadingSpinner';
+
+import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
+import { GITHUB_AUTH_INTENT_KEY, GITHUB_PROFILE_SNAPSHOT_KEY } from '@/shared/constants/githubAuth';
 
 // TODO: 리액트 훅 폼 적용 필요
 export default function MyPageForm() {
@@ -40,11 +46,16 @@ export default function MyPageForm() {
 
   const { mutate: patchUser, isPending: isPatchingUser } = usePatchCurrentUser();
   const { mutate: patchPassword, isPending: isPatchingPassword } = usePatchCurrentUserPassword();
+  const { mutate: disconnectGithub, isPending: isDisconnectingGithub } = useDeleteGithubConnection();
   const { openModal } = useModalStore();
   const { showToast } = useToastStore();
-  const router = useRouter();
+
   const isLocalLogin = user?.loginProvider === 'LOCAL';
-  const isGithubConnected = user?.githubConnected;
+
+  const isGithubDisconnectedSession =
+    typeof window !== 'undefined' && window.sessionStorage.getItem(GITHUB_DISCONNECTED_SESSION_KEY) === 'true';
+
+  const isGithubConnected = !isGithubDisconnectedSession && (user?.githubConnected ?? false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +74,23 @@ export default function MyPageForm() {
 
   const handleGithubConnect = async () => {
     try {
-      const { loginUrl } = await fetchAuth.getGithubAuthorizeUrlByEnv();
-      if (loginUrl) window.location.href = loginUrl;
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(GITHUB_DISCONNECTED_SESSION_KEY);
+      }
+      const { loginUrl } = await fetchAuth.getGithubConnectAuthorizeUrlByEnv();
+      if (loginUrl) {
+        if (user) {
+          window.sessionStorage.setItem(
+            GITHUB_PROFILE_SNAPSHOT_KEY,
+            JSON.stringify({
+              nickname: user.nickname,
+              profileImageUrl: user.profileImageUrl ?? null,
+            }),
+          );
+        }
+        window.sessionStorage.setItem(GITHUB_AUTH_INTENT_KEY, 'connect');
+        window.location.href = loginUrl;
+      }
     } catch (error) {
       console.error('GitHub 연결 URL 요청 실패:', error);
       showToast(t.auth.socialLoginFail, 'fail');
@@ -76,7 +102,7 @@ export default function MyPageForm() {
       <PopupModal
         variant={{ type: 'githubDisconnect' }}
         onConfirm={() => {
-          // TODO: GitHub 연결 해제 API 연동 필요
+          disconnectGithub();
         }}
       />,
     );
@@ -89,11 +115,17 @@ export default function MyPageForm() {
         onConfirm={async (password) => {
           try {
             await fetchUsers.deleteCurrentUser(password ? { password } : undefined);
-            router.push('/login');
           } catch (error) {
             console.error('Failed to delete account:', error);
             showToast(t.mypage.withdrawFail, 'fail');
+            return;
           }
+          try {
+            await fetch('/api/clear-session', { method: 'POST' });
+          } catch (e) {
+            console.error('Failed to clear session:', e);
+          }
+          window.location.replace('/login');
         }}
       />,
     );
@@ -154,7 +186,7 @@ export default function MyPageForm() {
     <div className="flex flex-col gap-10">
       {!isMobile && <PageHeader title={t.mypage.title} />}
 
-      <div className="flex min-h-219.5 w-140 flex-col gap-6 rounded-2xl bg-white p-8">
+      <div className="flex min-h-219.5 w-140 flex-col gap-6 rounded-2xl bg-white p-8 dark:bg-gray-850">
         {/* 프로필 이미지 */}
         <div className="flex justify-center">
           <div className="relative h-33 w-33">
@@ -202,19 +234,19 @@ export default function MyPageForm() {
         </FormField>
 
         {/* 닉네임 */}
-        <FormField label={t.mypage.nickname}>
+        <FormField label={t.mypage.nickname} className="-mt-2">
           <Input
             type="text"
             value={nickname}
             onChange={handleNicknameChange}
             placeholder={t.mypage.nicknamePlaceholder}
           />
-          {nicknameSuccess && <p className="px-1 text-sm text-[#0CAF60]">{t.mypage.nicknameSuccess}</p>}
+          {nicknameSuccess && <p className="px-1 text-sm text-[#0CAF60] dark:text-[#009D97]">{t.mypage.nicknameSuccess}</p>}
         </FormField>
 
         {/* 비밀번호 변경 - 소셜 로그인이면 숨김 */}
         {isLocalLogin && (
-          <FormField label={t.mypage.passwordChange}>
+          <FormField label={t.mypage.passwordChange} className="mt-4">
             <div className="flex flex-col gap-2">
               <Input
                 type="password"
@@ -243,11 +275,11 @@ export default function MyPageForm() {
         )}
 
         {/* 저장하기 / 회원 탈퇴 버튼 */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.25">
           <Button
             variant="primary"
             type="button"
-            className="h-14 w-full"
+            className="h-14 w-full text-lg dark:text-gray-850"
             onClick={handleSave}
             disabled={isPatchingUser || isPatchingPassword}
             aria-label={t.mypage.save}
@@ -258,7 +290,7 @@ export default function MyPageForm() {
           <button
             type="button"
             onClick={handleAccountDelete}
-            className="h-14 w-full rounded-full bg-gray-100 text-sm font-medium text-gray-500 hover:bg-gray-200"
+            className="h-14 w-full rounded-full bg-gray-100 text-lg font-medium text-gray-500 hover:bg-gray-200 dark:bg-gray-750 dark:text-[#DFDFDF] dark:hover:bg-gray-700"
           >
             {t.mypage.withdraw}
           </button>
@@ -266,17 +298,17 @@ export default function MyPageForm() {
 
         {/* GitHub 연동 */}
         <div className="flex items-center justify-center gap-2">
-          <span className="text-sm font-medium text-gray-700">{t.mypage.githubConnect}</span>
-          <span className={`h-2 w-2 rounded-full ${isGithubConnected ? 'bg-[#00C87F]' : 'bg-gray-400'}`} />
-          <span className="text-sm text-gray-500">
+          <span className="text-base font-medium text-gray-700 dark:text-[#888888]">{t.mypage.githubConnect}</span>
+          <span className={`h-2.5 w-2.5 rounded-full ${isGithubConnected ? 'bg-[#00C87F]' : 'bg-gray-400'}`} />
+          <span className="text-base text-gray-500 dark:text-[#888888]">
             {isGithubConnected ? t.mypage.connected : t.mypage.notConnected}
           </span>
           {isGithubConnected ? (
             <button
               type="button"
               onClick={handleGithubDisconnect}
-              className="rounded-full border border-gray-200 px-4 py-1.5 text-sm hover:bg-gray-50"
-              style={{ color: '#6A6A6A' }}
+              disabled={isDisconnectingGithub}
+              className="h-[25.92px] w-[74.37px] rounded-full border border-gray-200 text-[13.52px] hover:bg-gray-50 dark:border-[#5D5D5D] dark:bg-[#5D5D5D] dark:text-[#DCDCDC] dark:hover:bg-[#6D6D6D]"
             >
               {t.mypage.disconnect}
             </button>
@@ -284,7 +316,7 @@ export default function MyPageForm() {
             <button
               type="button"
               onClick={handleGithubConnect}
-              className="rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
+              className="rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-750"
             >
               {t.mypage.connect}
             </button>

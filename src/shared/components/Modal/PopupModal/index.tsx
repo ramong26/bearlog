@@ -144,11 +144,11 @@ export function PopupModal({ onConfirm, variant }: PopupModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby={labelledBy}
-      className="w-85.75 rounded-3xl bg-white p-4 pt-12 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:w-114 md:rounded-[40px] md:p-8 md:pt-16"
+      className="w-114 min-h-68.25 rounded-3xl bg-white dark:bg-gray-850 p-4 pt-12 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:rounded-[40px] md:p-8 md:pt-16"
     >
       {/* 타이틀 + 경고 */}
       <div className="mb-8 flex flex-col text-center md:mb-10">
-        <p id={labelledBy} className="text-sm font-semibold text-slate-800 md:text-xl">
+        <p id={labelledBy} className="text-sm font-semibold text-slate-800 dark:text-gray-100 md:text-xl">
           {titleLines.map((line, i) => (
             <span key={i} className="block">
               {line}
@@ -156,9 +156,9 @@ export function PopupModal({ onConfirm, variant }: PopupModalProps) {
           ))}
         </p>
         {warning && (
-          <div className="mt-[17.5px] flex items-center justify-center gap-1">
-            <OctagonAlert className="text-bearlog-500" size={15} />
-            <span className="text-bearlog-600 text-xs leading-6 font-medium whitespace-pre-line md:text-base">
+          <div className="mt-[17.5px] flex items-start justify-center gap-1">
+            <OctagonAlert className="mt-1 text-bearlog-500" size={15} />
+            <span className="text-bearlog-500 text-xs leading-6 font-medium whitespace-pre-line md:text-base">
               {warning}
             </span>
           </div>
@@ -177,14 +177,14 @@ export function PopupModal({ onConfirm, variant }: PopupModalProps) {
       <div className="flex gap-3">
         <Button
           variant="cancel"
-          className="flex-1 px-[18px] py-[10px] text-sm text-gray-500 md:py-[14px] md:text-[18px]"
+          className="flex-1 px-[18px] py-[10px] text-sm text-gray-500 dark:bg-transparent dark:text-gray-500 dark:border-[#AFAFAF] md:py-3.5 md:text-[18px]"
           onClick={closeModal}
         >
           {t.modal.cancel}
         </Button>
         <Button
           variant="primary"
-          className="flex-1 px-[18px] py-[10px] text-sm md:py-[14px] md:text-[18px]"
+          className="flex-1 px-[18px] py-[10px] text-sm dark:text-gray-850 md:py-3.5 md:text-[18px]"
           disabled={isLocalAccountDelete && !password}
           onClick={() => {
             onConfirm(isLocalAccountDelete ? password : undefined);

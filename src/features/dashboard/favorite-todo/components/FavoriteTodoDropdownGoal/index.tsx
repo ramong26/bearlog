@@ -43,15 +43,17 @@ export default function FavoriteTodoDropdownGoal({
         type="button"
         onClick={() => setIsToggleOpen((prev) => !prev)}
         className={[
-          'flex w-full items-center justify-between gap-2 self-stretch rounded-xl border border-gray-100 bg-gray-50 px-4 py-[10px] text-base font-medium md:py-3',
-          isToggleOpen && 'border-bearlog-500 rounded-2xl',
+          'flex w-full items-center justify-between gap-2 self-stretch rounded-xl border bg-gray-50 dark:bg-gray-850 px-4 py-[10px] text-base font-medium md:py-3',
+          (isToggleOpen || !!selectedValue)
+            ? 'border-bearlog-500 rounded-2xl'
+            : 'border-gray-100 dark:border-gray-900',
         ]
           .filter(Boolean)
           .join(' ')}
       >
         <div className="flex min-w-0 items-center gap-2">
           <Image src="/image/goal-todo.png" alt="goal todo" width={32} height={32} />
-          <span className="line-clamp-1 text-sm font-semibold text-[#1E293B] md:text-base">
+          <span className="line-clamp-1 text-sm font-semibold text-[#1E293B] dark:text-white md:text-base">
             {selectedItem?.label ?? '선택해주세요'}
           </span>
         </div>

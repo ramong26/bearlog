@@ -15,11 +15,11 @@ export default function TodoTitle({ todoId }: { todoId: number }) {
         variant="green"
         className={clsx(
           'rounded-md px-[5.5px] py-[3px] text-xs font-semibold whitespace-nowrap',
-          !todo?.done && 'text-bearlog-600 bg-[rgba(0,183,117,0.10)]',
-          todo?.done && 'bg-[#BBB] text-[#FFF]',
+          !todo?.done && 'text-bearlog-600 bg-[rgba(0,183,117,0.10)] dark:bg-[#C7F2EB] dark:text-bearlog-600',
+          todo?.done && 'bg-[#BBB] text-[#FFF] dark:bg-[#707070]',
         )}
       />
-      <p className="line-clamp-1 text-sm font-normal text-[#333]">{todo?.title}</p>
+      <p className="line-clamp-1 text-sm font-normal text-[#333] dark:text-gray-450">{todo?.title}</p>
     </div>
   );
 }

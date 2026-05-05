@@ -33,7 +33,7 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
         <button
           type="button"
           className={clsx(
-            'flex w-full cursor-pointer items-center gap-2 rounded-xl border border-gray-300 p-3',
+            'flex w-full cursor-pointer items-center gap-2 rounded-xl border border-gray-300 dark:border-[#7E7E7E] dark:bg-gray-850 p-3',
             'text-sm font-normal',
             'md:h-14 md:rounded-2xl md:p-4 md:text-base',
             open && 'border-bearlog-500 border',
@@ -42,13 +42,13 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
         >
           <CalendarIcon size={20} className="shrink-0 stroke-gray-500 md:size-6" />
           {date ? (
-            <span className="text-gray-700">{formatDate(date)}</span>
+            <span className="text-gray-700 dark:text-white">{formatDate(date)}</span>
           ) : (
-            <span className="text-gray-500">{t.todo.dueDatePlaceholder}</span>
+            <span className="text-gray-500 dark:text-gray-400">{t.todo.dueDatePlaceholder}</span>
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[328px] w-auto bg-white p-0" sideOffset={10} side="bottom" align="start">
+      <PopoverContent className="w-[328px] w-auto bg-white dark:bg-gray-850 dark:ring-0 p-0" sideOffset={10} side="bottom" align="start">
         <Calendar
           mode="single"
           selected={date}
@@ -60,18 +60,18 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
             root: 'w-[328px]',
             months: 'flex flex-col w-full px-6',
             month: 'flex w-full flex-col',
-            month_caption: 'flex w-full items-center justify-center pt-5',
+            month_caption: 'flex w-full items-center justify-center pt-5 text-gray-800 dark:text-white',
 
             // 요일
             weekdays: 'flex w-full mt-3',
-            weekday: 'w-10 h-10 flex items-center justify-center text-sm font-medium text-gray-700 tracking-[-0.42px]',
+            weekday: 'w-10 h-10 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-400 tracking-[-0.42px]',
 
             // 날짜 행
             weeks: 'pb-4',
             week: 'flex w-full mt-1',
             day: 'w-10 h-10 p-0 flex items-center justify-center',
 
-            today: 'rounded-full bg-gray-50',
+            today: 'rounded-full bg-gray-50 dark:bg-gray-700',
             outside: 'opacity-100',
             disabled: 'opacity-100',
             hidden: 'invisible',
@@ -82,16 +82,16 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
                 <Button
                   type="button"
                   onClick={onPreviousClick}
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent hover:bg-gray-50"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <ChevronLeftIcon size={20} className="stroke-[#A4A4A4] hover:stroke-gray-700" />
+                  <ChevronLeftIcon size={20} className="stroke-[#A4A4A4] hover:stroke-gray-700 dark:hover:stroke-gray-300" />
                 </Button>
                 <Button
                   type="button"
                   onClick={onNextClick}
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent hover:bg-gray-50"
+                  className="flex size-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
-                  <ChevronRightIcon size={20} className="stroke-[#A4A4A4] hover:stroke-gray-700" />
+                  <ChevronRightIcon size={20} className="stroke-[#A4A4A4] hover:stroke-gray-700 dark:hover:stroke-gray-300" />
                 </Button>
               </div>
             ),
@@ -99,10 +99,10 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
               <button
                 {...props}
                 className={cn(
-                  'flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-sm font-normal tracking-[-0.42px] transition-colors hover:bg-gray-50',
-                  modifiers.outside ? 'text-[#A4A4A4]' : 'text-gray-700',
-                  modifiers.disabled && 'cursor-not-allowed text-[#A4A4A4]',
-                  modifiers.today && !modifiers.selected && 'bg-gray-50 font-medium',
+                  'flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-sm font-normal tracking-[-0.42px] transition-colors hover:bg-gray-50 dark:hover:bg-gray-700',
+                  modifiers.outside ? 'text-gray-400' : 'text-gray-700 dark:text-gray-400',
+                  modifiers.disabled && 'cursor-not-allowed text-gray-400',
+                  modifiers.today && !modifiers.selected && 'bg-gray-50 dark:bg-gray-900 dark:text-white font-medium',
                   modifiers.selected && 'bg-bearlog-500 hover:bg-bearlog-500 font-medium text-white!',
                 )}
               />
@@ -119,7 +119,7 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
               if (onCancel) onCancel();
               setOpen(false);
             }}
-            className="flex flex-1 items-center justify-center rounded-full border border-gray-300 py-[10px] text-sm font-semibold text-gray-500"
+            className="flex flex-1 items-center justify-center rounded-full border border-gray-300 dark:border-gray-600 py-[10px] text-sm font-semibold text-gray-500 dark:text-gray-500"
           >
             {t.common.cancel}
           </Button>
@@ -129,7 +129,7 @@ export default function DateInput({ date, onSelect, onConfirm, onCancel }: DateI
               onConfirm(date);
               setOpen(false);
             }}
-            className="bg-bearlog-500 flex flex-1 items-center justify-center rounded-full py-[10px] text-sm font-semibold text-white"
+            className="bg-bearlog-500 flex flex-1 items-center justify-center rounded-full py-[10px] text-sm font-semibold text-white dark:text-gray-850"
           >
             {t.common.confirm}
           </Button>

@@ -13,7 +13,7 @@ interface CalendarEventItemProps {
 export default function CalendarEventItem({ todo }: CalendarEventItemProps) {
   if (todo.done) {
     return (
-      <div className="flex w-full items-center gap-1 rounded-[6px] border border-gray-300 bg-gray-50 px-2 py-1">
+      <div className="flex w-full items-center gap-1 rounded-[6px] border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-850 px-2 py-1">
         <CheckIcon size={16} className="stroke-gray-400" />
         <p className="flex-1 overflow-hidden text-xs leading-4 font-semibold text-ellipsis whitespace-nowrap text-gray-400">
           {todo.title}
@@ -23,7 +23,7 @@ export default function CalendarEventItem({ todo }: CalendarEventItemProps) {
   }
 
   return (
-    <div className="border-bearlog-300 bg-calendar-300 flex w-full items-center rounded-[6px] border px-2 py-1 opacity-20">
+    <div className="border-bearlog-300 bg-calendar-300 dark:bg-[#00FFA1] dark:border-bearlog-300 flex w-full items-center rounded-[6px] border px-2 py-1 opacity-20 dark:opacity-100">
       <p className="text-bearlog-600 flex-1 overflow-hidden text-xs leading-4 font-semibold text-ellipsis whitespace-nowrap">
         {todo.title}
       </p>

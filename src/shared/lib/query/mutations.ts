@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { fetchAuth } from '../api';
@@ -14,11 +14,18 @@ import {
   PostTodoRequest,
   TodoListResponse,
 } from '../api/fetchTodos';
-import { fetchUsers, PatchCurrentUserPasswordRequest, PatchCurrentUserRequest } from '../api/fetchUsers';
-import { githubKeys, goalKeys, noteKeys, todoKeys, userKeys } from './keyFactory';
+import {
+  fetchUsers,
+  CurrentUserResponse,
+  PatchCurrentUserPasswordRequest,
+  PatchCurrentUserRequest,
+} from '../api/fetchUsers';
+import { dashboardKeys, githubKeys, goalKeys, noteKeys, todoKeys, userKeys } from './keyFactory';
 import { noteQueries } from './queryKeys';
 import { useToastStore } from '@/shared/stores/useToastStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';
+import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
 
 // goal
 export const usePostGoal = () => {
@@ -55,6 +62,7 @@ export const usePostGoal = () => {
     onSuccess: () => {
       showToast(t.mutations.goalCreated);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
   });
 };
@@ -86,6 +94,7 @@ export const useDeleteGoal = (goalId?: number) => {
     onSuccess: () => {
       showToast(t.mutations.goalDeleted);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
       router.push('/dashboard');
     },
     onError: () => {
@@ -129,6 +138,7 @@ export const usePatchGoal = (goalId?: number) => {
       }
 
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
     onError: () => {
       showToast(t.mutations.goalUpdateFail, 'fail');
@@ -138,18 +148,23 @@ export const usePatchGoal = (goalId?: number) => {
 
 export const useConnectGithubRepository = () => {
   const { showToast } = useToastStore();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: ConnectGithubRepositoryRequest) => fetchGithubIntegrations.postConnectRepository(data),
     onSuccess: () => {
-      showToast('GitHub 저장소가 목표로 연결되었습니다.');
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem(GITHUB_DISCONNECTED_SESSION_KEY);
+      }
+      showToast(t.mutations.githubRepositoryConnected);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
       queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
     onError: () => {
-      showToast('GitHub 저장소 연결에 실패했습니다.', 'fail');
+      showToast(t.mutations.githubRepositoryConnectFail, 'fail');
     },
   });
 };
@@ -157,6 +172,7 @@ export const useConnectGithubRepository = () => {
 export const useDisconnectGithubGoal = (goalId?: number) => {
   const router = useRouter();
   const { showToast } = useToastStore();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -182,11 +198,12 @@ export const useDisconnectGithubGoal = (goalId?: number) => {
       return { previousGoals };
     },
     onSuccess: () => {
-      showToast('GitHub 저장소 연결이 해제되었습니다.');
+      showToast(t.mutations.githubGoalDisconnected);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
       router.push('/dashboard');
     },
     onError: (_error, _variables, context) => {
@@ -194,11 +211,10 @@ export const useDisconnectGithubGoal = (goalId?: number) => {
       if (context?.previousGoals !== undefined) {
         queryClient.setQueryData(goalKeys.list(), context.previousGoals);
       }
-      showToast('GitHub 저장소 연결 해제에 실패했습니다.', 'fail');
+      showToast(t.mutations.githubGoalDisconnectFail, 'fail');
     },
   });
 };
-
 // todo
 export const usePostTodo = () => {
   const { showToast } = useToastStore();
@@ -218,7 +234,7 @@ export const usePostTodo = () => {
 
       queryClient.setQueryData(todoKeys.list(), (old: TodoListResponse | undefined) => ({
         ...old,
-        items: [
+        todos: [
           {
             id: Math.random(),
             title: data.title,
@@ -240,6 +256,7 @@ export const usePostTodo = () => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
     onError: (error) => {
       console.error(error);
@@ -277,6 +294,7 @@ export const useDeleteTodo = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
     onError: () => {
       showToast(t.mutations.todoDeleteFail, 'fail');
@@ -284,6 +302,7 @@ export const useDeleteTodo = (todoId?: number) => {
   });
 };
 
+// TODO: 정리 필요
 export const usePatchTodo = (todoId?: number) => {
   const { showToast } = useToastStore();
   const { t } = useLanguage();
@@ -303,7 +322,13 @@ export const usePatchTodo = (todoId?: number) => {
       }
 
       await queryClient.cancelQueries({ queryKey: todoKeys.detail(todoId) });
-      const previousTodo = queryClient.getQueryData(todoKeys.detail(todoId));
+      const previousTodo = queryClient.getQueryData<PatchTodoResponse>(todoKeys.detail(todoId));
+      await queryClient.cancelQueries({ queryKey: todoKeys.lists() });
+      const previousTodoLists = queryClient.getQueriesData({ queryKey: todoKeys.lists() });
+      await queryClient.cancelQueries({ queryKey: goalKeys.details() });
+      const previousGoalDetails = queryClient.getQueriesData({ queryKey: goalKeys.details() });
+      type OptimisticTodoItem = { id: number; done?: boolean | null } & Record<string, unknown>;
+      const optimisticTodo: OptimisticTodoItem | null = previousTodo ? { ...previousTodo, ...data } : null;
 
       queryClient.setQueryData(todoKeys.detail(todoId), (old: PatchTodoResponse | undefined) => {
         if (!old) return old;
@@ -314,7 +339,86 @@ export const usePatchTodo = (todoId?: number) => {
         };
       });
 
-      return { previousTodo };
+      const targetDone = typeof data.done === 'boolean' ? data.done : undefined;
+      const patchTodos = (todos: OptimisticTodoItem[], filterDone: boolean | undefined) => {
+        const updated = todos.map((todo) => (todo.id === todoId ? { ...todo, ...data } : todo));
+
+        if (targetDone === undefined || filterDone === undefined) {
+          return updated;
+        }
+
+        if (filterDone !== targetDone) {
+          return updated.filter((todo) => todo.id !== todoId);
+        }
+
+        if (!updated.some((todo) => todo.id === todoId) && optimisticTodo) {
+          return [optimisticTodo, ...updated];
+        }
+
+        return updated;
+      };
+
+      previousTodoLists.forEach(([queryKey, cached]) => {
+        const key = Array.isArray(queryKey) ? queryKey : [];
+        const params = (key.find((k) => typeof k === 'object' && k !== null) as Record<string, unknown>) ?? {};
+        const filterDone = typeof params.done === 'boolean' ? params.done : undefined;
+
+        queryClient.setQueryData(queryKey, () => {
+          if (!cached) return cached;
+
+          if (typeof cached === 'object' && cached !== null && 'pages' in cached) {
+            const infiniteData = cached as InfiniteData<TodoListResponse>;
+
+            return {
+              ...infiniteData,
+              pages: infiniteData.pages.map((page) => ({
+                ...page,
+                todos: patchTodos((page.todos ?? []) as OptimisticTodoItem[], filterDone),
+              })),
+            };
+          }
+
+          if (typeof cached === 'object' && cached !== null && 'todos' in cached) {
+            const todoList = cached as TodoListResponse;
+            return {
+              ...todoList,
+              todos: patchTodos((todoList.todos ?? []) as OptimisticTodoItem[], filterDone),
+            };
+          }
+
+          return cached;
+        });
+      });
+
+      queryClient.setQueriesData({ queryKey: goalKeys.details() }, (old: unknown) => {
+        if (!old || typeof old !== 'object' || old === null) return old;
+        if (!('todoList' in old) || !('doneList' in old)) return old;
+
+        const target = old as { todoList?: OptimisticTodoItem[]; doneList?: OptimisticTodoItem[] };
+        const targetDone = typeof data.done === 'boolean' ? data.done : undefined;
+        let todoList = (target.todoList ?? []).map((todo) => (todo.id === todoId ? { ...todo, ...data } : todo));
+        let doneList = (target.doneList ?? []).map((todo) => (todo.id === todoId ? { ...todo, ...data } : todo));
+
+        if (targetDone === true) {
+          const movingTodo = todoList.find((todo) => todo.id === todoId) ?? optimisticTodo;
+          todoList = todoList.filter((todo) => todo.id !== todoId);
+          if (movingTodo && !doneList.some((todo) => todo.id === todoId)) {
+            doneList = [movingTodo, ...doneList];
+          }
+        }
+
+        if (targetDone === false) {
+          const movingTodo = doneList.find((todo) => todo.id === todoId) ?? optimisticTodo;
+          doneList = doneList.filter((todo) => todo.id !== todoId);
+          if (movingTodo && !todoList.some((todo) => todo.id === todoId)) {
+            todoList = [movingTodo, ...todoList];
+          }
+        }
+
+        return { ...target, todoList, doneList };
+      });
+
+      return { previousTodo, previousTodoLists, previousGoalDetails };
     },
     onSuccess: () => {
       if (todoId !== undefined) {
@@ -325,12 +429,26 @@ export const usePatchTodo = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
 
     onError: (_error, _variables, context) => {
       if (todoId !== undefined && context?.previousTodo !== undefined) {
         queryClient.setQueryData(todoKeys.detail(todoId), context.previousTodo);
       }
+
+      if (context?.previousTodoLists) {
+        context.previousTodoLists.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+
+      if (context?.previousGoalDetails) {
+        context.previousGoalDetails.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+
       showToast(t.mutations.todoUpdateFail, 'fail');
     },
   });
@@ -373,8 +491,12 @@ export const usePatchTodoFavorite = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
-    onError: () => {
+    onError: (_error, _variables, context) => {
+      if (todoId !== undefined && context?.previousTodo !== undefined) {
+        queryClient.setQueryData(todoKeys.detail(todoId), context.previousTodo);
+      }
       showToast(t.mutations.favoriteFail, 'fail');
     },
   });
@@ -390,6 +512,7 @@ export const usePatchCurrentUser = () => {
     mutationFn: (data: PatchCurrentUserRequest) => fetchUsers.patchCurrentUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
     },
     onError: () => {
       showToast(t.mutations.userUpdateFail, 'fail');
@@ -405,6 +528,54 @@ export const usePatchCurrentUserPassword = () => {
     mutationFn: (data: PatchCurrentUserPasswordRequest) => fetchUsers.patchCurrentUserPassword(data),
     onError: () => {
       showToast(t.mutations.passwordUpdateFail, 'fail');
+    },
+  });
+};
+
+// TODO: 수정 필요
+export const useDeleteGithubConnection = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { showToast } = useToastStore();
+  const { t } = useLanguage();
+
+  return useMutation({
+    mutationFn: () => fetchUsers.deleteGithubConnection(),
+    onSuccess: () => {
+      if (typeof window !== 'undefined') {
+        window.sessionStorage.setItem(GITHUB_DISCONNECTED_SESSION_KEY, 'true');
+      }
+      useTodoModeStore.getState().setMode('MANUAL');
+      queryClient.setQueriesData({ queryKey: goalKeys.lists() }, (old: GoalListResponse | undefined) => {
+        if (!old) return old;
+        return {
+          ...old,
+          goals: (old.goals ?? []).filter((goal) => goal.source !== 'GITHUB'),
+        };
+      });
+      queryClient.setQueryData(userKeys.me(), (old: CurrentUserResponse | undefined) => {
+        if (!old) return old;
+        return {
+          ...old,
+          githubConnected: false,
+        };
+      });
+      queryClient.setQueryData(githubKeys.repositories(), []);
+      showToast(t.mutations.githubIntegrationDisconnected);
+      queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      queryClient.invalidateQueries({ queryKey: userKeys.githubConnection() });
+      queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: goalKeys.details() });
+      queryClient.invalidateQueries({ queryKey: todoKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: todoKeys.details() });
+      queryClient.invalidateQueries({ queryKey: todoKeys.all });
+      queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
+      queryClient.invalidateQueries({ queryKey: userKeys.progress() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+      router.push('/dashboard');
+    },
+    onError: () => {
+      showToast(t.mutations.githubIntegrationDisconnectFail, 'fail');
     },
   });
 };
@@ -431,6 +602,7 @@ export const usePostLogout = () => {
 export const usePostNote = () => {
   const queryClient = useQueryClient();
   const { showToast } = useToastStore();
+  const { t } = useLanguage();
   const router = useRouter();
 
   return useMutation({
@@ -438,11 +610,11 @@ export const usePostNote = () => {
     onSuccess: (response) => {
       if (!response.id || !response.goalId) {
         console.error('[usePostNote] Unexpected API response: missing id or goalId', response);
-        showToast('노트 작성에 실패했습니다.', 'fail');
+        showToast(t.mutations.noteCreateFail, 'fail');
         return;
       }
 
-      showToast('노트가 작성되었습니다.');
+      showToast(t.mutations.noteCreated);
       queryClient.setQueryData(noteQueries.detail(response.id).queryKey, response);
       queryClient.invalidateQueries({
         queryKey: noteKeys.lists(),
@@ -451,14 +623,14 @@ export const usePostNote = () => {
       router.push(`/goal/${response.goalId}/note/${response.id}`);
     },
     onError: () => {
-      showToast('노트 작성에 실패했습니다.', 'fail');
+      showToast(t.mutations.noteCreateFail, 'fail');
     },
   });
 };
-
 export const usePatchNote = (noteId: number, goalId: number) => {
   const queryClient = useQueryClient();
   const { showToast } = useToastStore();
+  const { t } = useLanguage();
   const router = useRouter();
 
   return useMutation({
@@ -468,20 +640,20 @@ export const usePatchNote = (noteId: number, goalId: number) => {
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
       router.push(`/goal/${goalId}/note/${noteId}`);
     },
-    onError: () => showToast('노트 수정에 실패했습니다', 'fail'),
+    onError: () => showToast(t.mutations.noteUpdateFail, 'fail'),
   });
 };
-
 export const useDeleteNote = (noteId: number, goalId: number) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { showToast } = useToastStore();
+  const { t } = useLanguage();
 
   return useMutation({
     mutationFn: () => fetchNotes.deleteNote(noteId),
     onSuccess: () => {
-      showToast('노트가 삭제되었습니다.', 'success');
+      showToast(t.mutations.noteDeleted, 'success');
       queryClient.removeQueries({
         queryKey: noteQueries.detail(noteId).queryKey,
       });
@@ -494,7 +666,7 @@ export const useDeleteNote = (noteId: number, goalId: number) => {
       router.push(`/goal/${goalId}/note?page=${page}`);
     },
     onError: () => {
-      showToast('노트 삭제에 실패했습니다', 'fail');
+      showToast(t.mutations.noteDeleteFail, 'fail');
     },
   });
 };

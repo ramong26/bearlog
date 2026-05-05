@@ -16,7 +16,7 @@ export default function PageSubTitle({ icons, subTitle, actions, className, text
 
         <h2
           className={clsx(
-            'w-full overflow-hidden text-base font-medium text-ellipsis whitespace-nowrap text-black transition-all duration-300 lg:text-lg',
+            'w-full overflow-hidden text-base font-medium text-ellipsis whitespace-nowrap text-black dark:text-white transition-all duration-300 lg:text-lg',
             textClassName,
           )}
         >

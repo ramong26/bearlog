@@ -13,7 +13,7 @@ export default function NoteDetailLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <div className={clsx('fixed inset-0 z-50 overflow-y-auto bg-white')}>
+    <div className={clsx('fixed inset-0 z-50 overflow-y-auto bg-white dark:bg-gray-850')}>
       {children}
       <NoteCloseButton onClose={handleClose} />
     </div>

@@ -40,7 +40,9 @@ export default function AllTodoContent() {
       <section className="flex flex-col gap-3">
         <AllTodoFilter todos={allTodos} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
         {allTodos.length === 0 ? (
-          <Empty>{t.allTodo.empty}</Empty>
+          <section className="rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8 w-full max-w-180 h-204 flex items-center justify-center">
+            <Empty>{t.allTodo.empty}</Empty>
+          </section>
         ) : (
           <DataBoundary>
             <AllTodoFetcher
@@ -92,7 +94,7 @@ function AllTodoFilter({ todos, selectedFilter, setSelectedFilter }: AllTodoFilt
       </div>
       <Button
         variant="cancel"
-        className="group hover:bg-bearlog-500 flex items-center gap-1 bg-[#F2F2F2] px-3 py-[10px] md:px-[20px]"
+        className="group hover:bg-bearlog-500 flex items-center gap-1 bg-[#F2F2F2] dark:bg-bearlog-500 dark:border-transparent px-3 py-[10px] md:px-[20px]"
         disabled={!defaultGoalId}
         onClick={() => {
           if (!defaultGoalId) return;
@@ -110,8 +112,8 @@ function AllTodoFilter({ todos, selectedFilter, setSelectedFilter }: AllTodoFilt
           });
         }}
       >
-        <PlusIcon size={20} className="text-gray-500 group-hover:text-white" />
-        <span className="overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-gray-500 group-hover:text-white">
+        <PlusIcon size={20} className="text-gray-500 dark:text-gray-850 group-hover:text-white" />
+        <span className="overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap text-gray-500 dark:text-gray-850 group-hover:text-white">
           {t.allTodo.addTodo}
         </span>
       </Button>
@@ -147,10 +149,10 @@ function AllTodoFetcher({ todos, fetchNextPage, hasNextPage, isFetchingNextPage 
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <section className="rounded-4xl bg-white p-4 md:p-8">
-      <div className="mb-6 flex flex-col items-center rounded-2xl bg-[#C6D7D14D] py-[10px]">
-        <span className="text-sm text-[#94ABA499]">{t.allTodo.issueReopenNotice1}</span>
-        <span className="text-sm text-[#94ABA499]">{t.allTodo.issueReopenNotice2}</span>
+    <section className="rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8">
+      <div className="mb-6 flex flex-col items-center rounded-2xl bg-[#C6D7D11C] py-[10px]">
+        <span className="text-sm text-[#AFB6B4B8]">{t.allTodo.issueReopenNotice1}</span>
+        <span className="text-sm text-[#AFB6B4B8]">{t.allTodo.issueReopenNotice2}</span>
       </div>
       <div className="max-h-[816px] overflow-y-auto">
         <div className="flex flex-col gap-4">

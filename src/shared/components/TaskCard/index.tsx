@@ -26,6 +26,7 @@ interface TaskCardProps {
   onStareClick: () => void;
   variant?: 'default' | 'green';
 }
+
 export default function TaskCard({ todo, onCheckboxClick, onStareClick, variant = 'default' }: TaskCardProps) {
   const isGreen = variant === 'green';
 
@@ -81,13 +82,13 @@ function TaskCheckbox({ todo, isGreen, onCheckboxClick }: TaskCheckboxProps) {
       className={twMerge(
         clsx(
           'relative flex size-4.5 shrink-0 items-center justify-center rounded-md transition-all duration-150 ease-in-out',
-          todo.done ? 'bg-bearlog-500 border-none' : 'border border-gray-300 bg-white',
+          todo.done ? 'bg-bearlog-500 border-none' : 'border border-border-input bg-bg-input',
           isGreen ? '' : 'border-none',
           isDoneAndLocked ? 'cursor-not-allowed opacity-70' : 'cursor-pointer',
         ),
       )}
     >
-      {todo.done && <CheckIcon size={16} color="#ffffff" />}
+      {todo.done && <CheckIcon size={16} className="text-white dark:text-gray-850" />}
     </button>
   );
 }
@@ -110,8 +111,8 @@ function TaskTitleButton({ todo, isGreen }: TaskTitleButtonProps) {
         'sm:text-[15px] sm:leading-6 md:text-base',
         todo.done && 'group-hover:text-bearlog-600 font-medium group-hover:font-semibold',
         isGreen
-          ? 'group-hover:text-bearlog-600 text-gray-800 group-hover:font-semibold'
-          : 'group-hover:text-bearlog-600 text-gray-500 group-hover:font-semibold',
+          ? 'group-hover:text-bearlog-600 text-gray-800 dark:text-gray-450 group-hover:font-semibold'
+          : 'group-hover:text-bearlog-600 text-gray-500 dark:text-gray-450 group-hover:font-semibold',
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
@@ -156,7 +157,7 @@ function TaskLinkNoteCreate({ todo }: TaskLinkNoteCreateProps) {
       className="relative flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center"
       aria-label="노트 작성 페이지로 이동"
     >
-      <Image src="/image/go-note.png" alt="Note menu" width={24} height={24} className="absolute inset-0" />
+      <Image src="/image/go-note.png" alt="Note menu" width={24} height={24} className="absolute inset-0 dark:brightness-[0.6]" />
     </Link>
   );
 }
