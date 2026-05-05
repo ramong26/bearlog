@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { todoQueries, goalQueries, userQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries, goalQueries, userQueries } from '@/shared/lib/query/queryFunction';
 import CalendarClient from '@/features/calendar/components/CalendarClient';
 import { DataBoundary } from '@/shared/components/ErrorSuspenseBoundary';
 

@@ -170,4 +170,21 @@ export const dashboardQueries = {
       queryFn: () => fetchDashboard.getDashboardSummary(),
       staleTime: DASHBOARD_STALE_TIME,
     }),
+<<<<<<< HEAD:src/shared/lib/query/queryKeys.ts
+=======
+
+  detailTodos: () =>
+    queryOptions({
+      queryKey: dashboardKeys.detailTodos(),
+      queryFn: () => fetchDashboard.getDashboardDetailTodos(),
+      staleTime: DASHBOARD_STALE_TIME,
+    }),
+
+  detailTodosByGoals: (goalIds: number[]) =>
+    queryOptions({
+      queryKey: dashboardKeys.detailTodosByGoals(goalIds),
+      queryFn: () => fetchDashboard.getDashboardDetailTodos(goalIds),
+      staleTime: DASHBOARD_STALE_TIME,
+    }),
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a:src/shared/lib/query/queryFunction.ts
 };

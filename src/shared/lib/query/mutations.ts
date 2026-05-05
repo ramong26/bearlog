@@ -21,7 +21,11 @@ import {
   PatchCurrentUserRequest,
 } from '../api/fetchUsers';
 import { dashboardKeys, githubKeys, goalKeys, noteKeys, todoKeys, userKeys } from './keyFactory';
+<<<<<<< HEAD
 import { noteQueries } from './queryKeys';
+=======
+import { noteQueries } from './queryFunction';
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
 import { useToastStore } from '@/shared/stores/useToastStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';
@@ -63,6 +67,10 @@ export const usePostGoal = () => {
       showToast(t.mutations.goalCreated);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
   });
 };
@@ -95,6 +103,10 @@ export const useDeleteGoal = (goalId?: number) => {
       showToast(t.mutations.goalDeleted);
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       router.push('/dashboard');
     },
     onError: () => {
@@ -139,6 +151,10 @@ export const usePatchGoal = (goalId?: number) => {
 
       queryClient.invalidateQueries({ queryKey: goalKeys.lists() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: () => {
       showToast(t.mutations.goalUpdateFail, 'fail');
@@ -162,6 +178,10 @@ export const useConnectGithubRepository = () => {
       queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: () => {
       showToast(t.mutations.githubRepositoryConnectFail, 'fail');
@@ -204,6 +224,10 @@ export const useDisconnectGithubGoal = (goalId?: number) => {
       queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       router.push('/dashboard');
     },
     onError: (_error, _variables, context) => {
@@ -257,6 +281,10 @@ export const usePostTodo = () => {
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: (error) => {
       console.error(error);
@@ -295,6 +323,10 @@ export const useDeleteTodo = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: () => {
       showToast(t.mutations.todoDeleteFail, 'fail');
@@ -430,6 +462,10 @@ export const usePatchTodo = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
 
     onError: (_error, _variables, context) => {
@@ -492,6 +528,10 @@ export const usePatchTodoFavorite = (todoId?: number) => {
       queryClient.invalidateQueries({ queryKey: goalKeys.details() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: (_error, _variables, context) => {
       if (todoId !== undefined && context?.previousTodo !== undefined) {
@@ -513,6 +553,10 @@ export const usePatchCurrentUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
     },
     onError: () => {
       showToast(t.mutations.userUpdateFail, 'fail');
@@ -572,6 +616,10 @@ export const useDeleteGithubConnection = () => {
       queryClient.invalidateQueries({ queryKey: githubKeys.repositories() });
       queryClient.invalidateQueries({ queryKey: userKeys.progress() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+<<<<<<< HEAD
+=======
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.detailTodos() });
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       router.push('/dashboard');
     },
     onError: () => {

@@ -58,4 +58,9 @@ export const tagKeys = {
 export const dashboardKeys = {
   all: ['dashboard'] as const,
   summary: () => [...dashboardKeys.all, 'summary'] as const,
+<<<<<<< HEAD
+=======
+  detailTodos: () => [...dashboardKeys.all, 'detailTodos'] as const,
+  detailTodosByGoals: (goalIds: number[]) => [...dashboardKeys.detailTodos(), goalIds] as const,
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
 };

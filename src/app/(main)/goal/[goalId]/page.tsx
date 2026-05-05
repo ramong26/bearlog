@@ -3,7 +3,7 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import GoalSummary from '@/features/goal/components/GoalSummary';
 import GoalDetail from '@/features/goal/components/GoalDetail';
 
-import { userQueries, goalQueries } from '@/shared/lib/query/queryKeys';
+import { userQueries, goalQueries } from '@/shared/lib/query/queryFunction';
 
 /**
  * @description 해당 페이지는 서버 컴포넌트입니다. 클라이언트 컴포넌트로 변경하지 말아주세요

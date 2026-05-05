@@ -1,36 +1,38 @@
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import TaskCard from '@/shared/components/TaskCard';
 
-import { ApiError } from '@/shared/lib/api';
+import { ApiError, TodoResponse } from '@/shared/lib/api';
 import { usePatchTodo, usePatchTodoFavorite } from '@/shared/lib/query/mutations';
-import { todoQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries } from '@/shared/lib/query/queryFunction';
 import { useToastStore } from '@/shared/stores/useToastStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 
 export default function TaskCardWrapper({
   item,
+  todo,
   mode,
 }: {
   item: { id: number; favorite?: boolean };
+  todo?: TodoResponse;
   mode: 'todo' | 'done';
 }) {
   const { showToast } = useToastStore();
   const { t } = useLanguage();
 
   // 할 일 상세 정보를 가져오기 위한 query 훅
-  const { data: todoDetail } = useQuery({
+  const { data: queriedTodoDetail } = useQuery({
     ...todoQueries.detail(item.id),
-    enabled: !!item.id,
+    enabled: !todo && !!item.id,
   });
+  const todoDetail = todo ?? queriedTodoDetail;
 
   // 할 일 상태 업데이트를 위한 mutation 훅
   const patchTodo = usePatchTodo(item.id);
   const handleCheckboxClick = async () => {
     if (todoDetail?.id === undefined) return;
-
     // GitHub 연동 todo는 완료 후 되돌리기 불가 — 백엔드는 source를 "github"(소문자)로 반환
     const isGithubTodo = todoDetail.source === 'github';
     if (isGithubTodo && todoDetail.done) return;
@@ -58,18 +60,18 @@ export default function TaskCardWrapper({
           error instanceof ApiError
             ? error.message
             : todoDetail.type === 'ISSUE'
-              ? 'GitHub Issue close에 실패했습니다. 잠시 후 다시 시도해주세요.'
-              : 'GitHub PR merge에 실패했습니다. 잠시 후 다시 시도해주세요.';
+              ? 'GitHub Issue close에 실패했습니다. 다시 시도해주세요.'
+              : 'GitHub PR merge에 실패했습니다. 다시 시도해주세요.';
         showToast(message, 'fail');
       } else {
         showToast('할 일 상태 업데이트에 실패했습니다.', 'fail');
       }
-      console.error('할 일 상태 업데이트 실패:', error);
+      console.error('할 일 상태 업데이트 오류:', error);
     }
   };
 
-  // 할 일 즐겨찾기 토글을 위한 mutation 훅
-  const [starred, setStarred] = useState(item?.favorite ?? false);
+  const [starred, setStarred] = useState(todoDetail?.favorite ?? item?.favorite ?? false);
+
   const { mutate: patchTodoFavorite } = usePatchTodoFavorite(item?.id);
 
   const handleStarToggle = () => {
@@ -81,7 +83,7 @@ export default function TaskCardWrapper({
         showToast(nextStarred ? t.mutations.favoriteAdded : t.mutations.favoriteRemoved);
       },
       onError: (error) => {
-        console.error(error);
+        console.error('즐겨찾기 상태 업데이트 오류:', error);
         setStarred(!nextStarred);
       },
     });
@@ -102,7 +104,7 @@ export default function TaskCardWrapper({
     >
       <TaskCard
         variant={mode === 'todo' ? 'green' : 'default'}
-        todo={todoDetail}
+        todo={{ ...todoDetail, favorite: starred }}
         onCheckboxClick={handleCheckboxClick}
         onStareClick={handleStarToggle}
       />

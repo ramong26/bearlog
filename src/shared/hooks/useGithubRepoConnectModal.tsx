@@ -5,7 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 
 import GithubRepoConnectModal from '@/shared/components/Modal/GithubRepoConnectModal';
 import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
+<<<<<<< HEAD
 import { goalQueries } from '@/shared/lib/query/queryKeys';
+=======
+import { goalQueries } from '@/shared/lib/query/queryFunction';
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';
 

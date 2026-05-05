@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BellIcon } from 'lucide-react';
-import { notificationQueries } from '@/shared/lib/query/queryKeys';
+import { notificationQueries } from '@/shared/lib/query/queryFunction';
 import { fetchNotifications } from '@/shared/lib/api/fetchNotifications';
 import { getRelativeTime } from '@/shared/lib/formatters';
 import useOnClickOutside from '@/shared/hooks/useOnClickOutside';
@@ -18,7 +18,13 @@ interface NotificationDropdownProps {
   placement?: 'right' | 'bottom';
 }
 
-export default function NotificationDropdown({ isOpen, onOpen, onClose, isSidebarOpen, placement = 'right' }: NotificationDropdownProps) {
+export default function NotificationDropdown({
+  isOpen,
+  onOpen,
+  onClose,
+  isSidebarOpen,
+  placement = 'right',
+}: NotificationDropdownProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
@@ -72,7 +78,13 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
         ref={buttonRef}
         onClick={() => (isOpen ? onClose() : onOpen())}
         className={`group hover:text-bearlog-600 relative text-gray-500 ${
+<<<<<<< HEAD
           isSidebarOpen ? 'rounded-[999px] border border-gray-200 p-[20px] dark:border-gray-500 dark:bg-gray-850' : 'p-0'
+=======
+          isSidebarOpen
+            ? 'dark:bg-gray-850 rounded-[999px] border border-gray-200 p-[20px] dark:border-gray-500'
+            : 'p-0'
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
         }`}
       >
         <BellIcon size={24} className="transition-transform group-hover:scale-110" />
@@ -88,7 +100,11 @@ export default function NotificationDropdown({ isOpen, onOpen, onClose, isSideba
           <div
             ref={dropdownRef}
             style={{ top: dropdownPos.top, bottom: dropdownPos.bottom, left: dropdownPos.left }}
+<<<<<<< HEAD
             className="fixed z-50 w-[320px] rounded-2xl border border-gray-100 dark:border-gray-850 bg-white dark:bg-gray-850 shadow-xl"
+=======
+            className="dark:border-gray-850 dark:bg-gray-850 fixed z-50 w-[320px] rounded-2xl border border-gray-100 bg-white shadow-xl"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
           >
             <div className="flex items-center justify-between px-5 py-4">
               <span className="text-base font-semibold text-gray-800 dark:text-white">{t.notification.title}</span>

@@ -8,29 +8,46 @@ import Empty from '@/shared/components/Empty';
 import PageSubTitle from '@/shared/components/PageSubTitle';
 import GoalBox from '../GoalBox';
 
-import { GoalListResponse } from '@/shared/lib/api';
-
-import { goalQueries } from '@/shared/lib/query/queryKeys';
+import { dashboardQueries, goalQueries } from '@/shared/lib/query/queryFunction';
 import { useTodoModeStore } from '@/shared/stores/useTodoModeStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
 import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
 
 export default function DashboardDetail() {
   const mode = useTodoModeStore((state) => state.mode);
-  const { data: goals } = useQuery(goalQueries.list());
+  const { data: goals, isFetched: isGoalsFetched } = useQuery(goalQueries.list({ limit: 100 }));
   const { t } = useLanguage();
 
   const [isGithubDisconnectedSession] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.sessionStorage.getItem(GITHUB_DISCONNECTED_SESSION_KEY) === 'true';
   });
+<<<<<<< HEAD
 
   const visibleGoals =
     mode === 'GITHUB' && isGithubDisconnectedSession
       ? []
       : (goals?.goals?.filter((goal) => goal.source === mode) ?? []);
+=======
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
 
-  if (mode === 'MANUAL' && visibleGoals.length === 0) {
+  const visibleGoalIds =
+    mode === 'GITHUB' && isGithubDisconnectedSession
+      ? []
+      : (goals?.goals?.filter((goal) => goal.source === mode).map((goal) => goal.id) ?? []);
+
+  const { data: goalDetail } = useQuery({
+    ...dashboardQueries.detailTodosByGoals(visibleGoalIds),
+    enabled: visibleGoalIds.length > 0,
+  });
+
+  const visibleGoals = goalDetail?.items ?? [];
+
+  if (!isGoalsFetched) {
+    return null;
+  }
+
+  if (mode === 'MANUAL' && visibleGoalIds.length === 0) {
     return <Empty>{t.dashboard.noFirstGoal}</Empty>;
   }
 
@@ -45,20 +62,12 @@ export default function DashboardDetail() {
             icons={<Image src={'/image/goal-todo.png'} alt="Goal Icon" width={40} height={40} />}
           />
           <div className="flex flex-col gap-[32px] pt-[10px]">
-            {visibleGoals.map((goal) => (
-              <GoalDetailItem key={goal.id} goal={goal} />
+            {visibleGoals.map((goalDetailItem) => (
+              <GoalBox key={goalDetailItem.goal.id} data={goalDetailItem} />
             ))}
           </div>
         </>
       )}
     </section>
   );
-}
-
-function GoalDetailItem({ goal }: { goal: GoalListResponse['goals'][number] }) {
-  const { data: goalDetail } = useQuery(goalQueries.detail(goal.id));
-
-  if (!goalDetail) return null;
-
-  return <GoalBox data={goalDetail} />;
 }

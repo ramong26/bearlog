@@ -9,7 +9,11 @@ import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
 import LoadingSpinner from '@/shared/components/LoadingSpinner';
 
+<<<<<<< HEAD
 import { userQueries } from '@/shared/lib/query/queryKeys';
+=======
+import { userQueries } from '@/shared/lib/query/queryFunction';
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
 import {
   useDeleteGithubConnection,
   usePatchCurrentUser,
@@ -186,7 +190,11 @@ export default function MyPageForm() {
     <div className="flex flex-col gap-10">
       {!isMobile && <PageHeader title={t.mypage.title} />}
 
+<<<<<<< HEAD
       <div className="flex min-h-219.5 w-140 flex-col gap-6 rounded-2xl bg-white p-8 dark:bg-gray-850">
+=======
+      <div className="dark:bg-gray-850 flex min-h-219.5 w-140 flex-col gap-6 rounded-2xl bg-white p-8">
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
         {/* 프로필 이미지 */}
         <div className="flex justify-center">
           <div className="relative h-33 w-33">
@@ -241,7 +249,13 @@ export default function MyPageForm() {
             onChange={handleNicknameChange}
             placeholder={t.mypage.nicknamePlaceholder}
           />
+<<<<<<< HEAD
           {nicknameSuccess && <p className="px-1 text-sm text-[#0CAF60] dark:text-[#009D97]">{t.mypage.nicknameSuccess}</p>}
+=======
+          {nicknameSuccess && (
+            <p className="px-1 text-sm text-[#0CAF60] dark:text-[#009D97]">{t.mypage.nicknameSuccess}</p>
+          )}
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
         </FormField>
 
         {/* 비밀번호 변경 - 소셜 로그인이면 숨김 */}
@@ -279,7 +293,11 @@ export default function MyPageForm() {
           <Button
             variant="primary"
             type="button"
+<<<<<<< HEAD
             className="h-14 w-full text-lg dark:text-gray-850"
+=======
+            className="dark:text-gray-850 h-14 w-full text-lg"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
             onClick={handleSave}
             disabled={isPatchingUser || isPatchingPassword}
             aria-label={t.mypage.save}
@@ -290,7 +308,11 @@ export default function MyPageForm() {
           <button
             type="button"
             onClick={handleAccountDelete}
+<<<<<<< HEAD
             className="h-14 w-full rounded-full bg-gray-100 text-lg font-medium text-gray-500 hover:bg-gray-200 dark:bg-gray-750 dark:text-[#DFDFDF] dark:hover:bg-gray-700"
+=======
+            className="dark:bg-gray-750 h-14 w-full rounded-full bg-gray-100 text-lg font-medium text-gray-500 hover:bg-gray-200 dark:text-[#DFDFDF] dark:hover:bg-gray-700"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
           >
             {t.mypage.withdraw}
           </button>
@@ -316,7 +338,11 @@ export default function MyPageForm() {
             <button
               type="button"
               onClick={handleGithubConnect}
+<<<<<<< HEAD
               className="rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-750"
+=======
+              className="dark:hover:bg-gray-750 rounded-full border border-gray-200 px-4 py-1.5 text-sm text-gray-500 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
             >
               {t.mypage.connect}
             </button>

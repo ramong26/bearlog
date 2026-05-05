@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { useLanguage } from '@/shared/contexts/LanguageContext';
-import { todoQueries } from '@/shared/lib/query/queryKeys';
+import { todoQueries } from '@/shared/lib/query/queryFunction';
 import Button from '@/shared/components/Button';
 import FormField from '@/shared/components/FormField';
 import Dropdown from '@/shared/components/Dropdown';
@@ -29,10 +29,19 @@ export default function NoteCreateModal({ goalId, onConfirm }: NoteCreateModalPr
   }));
 
   return (
+<<<<<<< HEAD
     <div className="w-85.75 rounded-3xl bg-white dark:bg-gray-850 p-4 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:w-114 md:rounded-[40px] md:p-8">
       <div className="flex flex-col">
         <div className="mb-6 flex w-full items-center justify-between self-stretch md:mb-8">
           <h2 className="text-base font-semibold text-slate-800 dark:text-white md:text-xl">{t.note.todoSelectTitle}</h2>
+=======
+    <div className="dark:bg-gray-850 w-85.75 rounded-3xl bg-white p-4 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:w-114 md:rounded-[40px] md:p-8">
+      <div className="flex flex-col">
+        <div className="mb-6 flex w-full items-center justify-between self-stretch md:mb-8">
+          <h2 className="text-base font-semibold text-slate-800 md:text-xl dark:text-white">
+            {t.note.todoSelectTitle}
+          </h2>
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
           <XIcon className="cursor-pointer text-slate-400" size={24} onClick={closeModal} />
         </div>
 
@@ -55,7 +64,11 @@ export default function NoteCreateModal({ goalId, onConfirm }: NoteCreateModalPr
           </Button>
           <Button
             variant="primary"
+<<<<<<< HEAD
             className="flex-1 px-[18px] py-[10px] text-sm dark:text-gray-850 md:py-[14px] md:text-[18px]"
+=======
+            className="dark:text-gray-850 flex-1 px-[18px] py-[10px] text-sm md:py-[14px] md:text-[18px]"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
             disabled={!selectedTodoId}
             onClick={() => {
               onConfirm(Number(selectedTodoId));

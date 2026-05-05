@@ -10,7 +10,7 @@ import PageHeader from '@/shared/components/PageHeader';
 import TaskCardWrapper from '@/features/dashboard/components/TaskCardWrapper';
 import FavoriteTodoDropdownGoal from '../FavoriteTodoDropdownGoal';
 
-import { goalQueries, todoQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries, todoQueries } from '@/shared/lib/query/queryFunction';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import type { TodoListResponse } from '@/shared/lib/api';
 import { TodoOptions } from '@/shared/types/types';
@@ -41,15 +41,9 @@ export default function FavoriteTodoContent() {
 
   return (
     <div className="mx-auto mb-[76px] flex max-w-[720px] flex-col gap-6">
-      {breakpoint !== 'mobile' && (
-        <PageHeader title={t.sidebar.favoriteTodo} count={totalCount} className="pl-2" />
-      )}
+      {breakpoint !== 'mobile' && <PageHeader title={t.sidebar.favoriteTodo} count={totalCount} className="pl-2" />}
       <section className="flex flex-col gap-3">
-        <FavoriteTodoFilter
-          todos={allTodos}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-        />
+        <FavoriteTodoFilter todos={allTodos} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
         <DataBoundary>
           <FavoriteTodoFetcher
             todos={allTodos}
@@ -171,7 +165,11 @@ function FavoriteTodoFetcher({
   ];
 
   return (
+<<<<<<< HEAD
     <section className="flex flex-col gap-5 rounded-4xl bg-white dark:bg-gray-850 p-4 md:p-8 w-full max-w-180 h-204">
+=======
+    <section className="dark:bg-gray-850 flex h-204 w-full max-w-180 flex-col gap-5 rounded-4xl bg-white p-4 md:p-8">
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       <FavoriteTodoDropdownGoal
         selectedValue={selectedGoal}
         onSelectItem={(item) => setSelectedGoal(item.value)}

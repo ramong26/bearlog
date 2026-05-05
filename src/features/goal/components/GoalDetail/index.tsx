@@ -8,7 +8,7 @@ import Button from '@/shared/components/Button';
 import Empty from '@/shared/components/Empty';
 import TaskCardWrapper from '@/features/dashboard/components/TaskCardWrapper';
 
-import { goalQueries } from '@/shared/lib/query/queryKeys';
+import { goalQueries } from '@/shared/lib/query/queryFunction';
 import { useTodoCreateModal } from '@/features/todo/hooks/useTodoCreateModal';
 import { useGithubTodoCreateModal } from '@/features/todo/hooks/useGithubTodoCreateModal';
 import { useLanguage } from '@/shared/contexts/LanguageContext';

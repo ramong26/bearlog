@@ -8,7 +8,7 @@ import Button from '@/shared/components/Button';
 
 import { fetchAuth } from '@/shared/lib/api';
 import { useConnectGithubRepository } from '@/shared/lib/query/mutations';
-import { githubQueries, goalQueries, userQueries } from '@/shared/lib/query/queryKeys';
+import { githubQueries, goalQueries, userQueries } from '@/shared/lib/query/queryFunction';
 import { useModalStore } from '@/shared/stores/useModalStore';
 import { GITHUB_DISCONNECTED_SESSION_KEY } from '@/shared/constants/github';
 import { GITHUB_AUTH_INTENT_KEY, GITHUB_PROFILE_SNAPSHOT_KEY } from '@/shared/constants/githubAuth';
@@ -41,7 +41,11 @@ export default function GithubRepoConnectModal() {
   );
 
   return (
+<<<<<<< HEAD
     <div className="no-scrollbar flex w-full flex-col overflow-y-auto rounded-t-[32px] bg-white dark:bg-gray-850 p-6 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:rounded-[40px] md:p-8">
+=======
+    <div className="no-scrollbar dark:bg-gray-850 flex w-full flex-col overflow-y-auto rounded-t-[32px] bg-white p-6 shadow-[0px_0px_60px_0px_rgba(0,0,0,0.05)] md:rounded-[40px] md:p-8">
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       <div className="mb-[30px] flex flex-col gap-[10px]">
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-black dark:text-white">{t.modal.githubRepoConnectTitle}</span>
@@ -50,9 +54,13 @@ export default function GithubRepoConnectModal() {
             <XIcon size={24} className="stroke-gray-400" />
           </button>
         </div>
+<<<<<<< HEAD
         <span className="text-xl font-medium text-slate-500 dark:text-gray-400">
           {t.modal.githubRepoConnectDesc}
         </span>
+=======
+        <span className="text-xl font-medium text-slate-500 dark:text-gray-400">{t.modal.githubRepoConnectDesc}</span>
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
       </div>
 
       {!user?.githubConnected ? (
@@ -62,11 +70,19 @@ export default function GithubRepoConnectModal() {
           profileImageUrl={user?.profileImageUrl ?? null}
         />
       ) : hasConnectedRepo ? (
+<<<<<<< HEAD
         <div className="rounded-[24px] bg-[#F6F8FA] dark:bg-gray-750 p-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
           {t.modal.githubRepoAlreadyConnected}
         </div>
       ) : availableRepositories.length === 0 ? (
         <div className="rounded-[24px] bg-[#F6F8FA] dark:bg-gray-750 p-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
+=======
+        <div className="dark:bg-gray-750 rounded-[24px] bg-[#F6F8FA] p-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
+          {t.modal.githubRepoAlreadyConnected}
+        </div>
+      ) : availableRepositories.length === 0 ? (
+        <div className="dark:bg-gray-750 rounded-[24px] bg-[#F6F8FA] p-5 text-sm leading-6 text-gray-600 dark:text-gray-300">
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
           {t.modal.githubRepoNoAvailable}
         </div>
       ) : (
@@ -74,7 +90,11 @@ export default function GithubRepoConnectModal() {
           {availableRepositories.map((repository) => (
             <article
               key={repository.id}
+<<<<<<< HEAD
               className="flex items-center justify-between gap-4 rounded-[24px] border border-gray-200 dark:border-gray-700 bg-[#F6F8FA] dark:bg-gray-750 p-5"
+=======
+              className="dark:bg-gray-750 flex items-center justify-between gap-4 rounded-[24px] border border-gray-200 bg-[#F6F8FA] p-5 dark:border-gray-700"
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
             >
               <div className="min-w-0">
                 <p className="truncate text-base font-semibold text-gray-800 dark:text-white">{repository.name}</p>
@@ -153,7 +173,11 @@ function GithubRepoDescription({
           <span className="truncate text-lg">{t.modal.cancel}</span>
         </Button>
         <Button className="px-40 py-[18.5px]" onClick={handleGithubLogin}>
+<<<<<<< HEAD
           <span className="truncate text-lg dark:text-bg-input">{t.modal.confirm}</span>
+=======
+          <span className="dark:text-bg-input truncate text-lg">{t.modal.confirm}</span>
+>>>>>>> 97ec23b9b02894d7b559c607539a8f29546a813a
         </Button>
       </div>
     </>
