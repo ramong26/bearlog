@@ -2,9 +2,13 @@
 
 import { XIcon } from 'lucide-react';
 
-export default function NoteCloseButton({ onClose }: { onClose: () => void }) {
+export default function NoteCloseButton({ onCloseAction }: { onCloseAction: () => void }) {
   return (
-    <button type="button" onClick={onClose} className="absolute top-5 right-5 cursor-pointer md:top-10 md:right-10">
+    <button
+      type="button"
+      onClick={onCloseAction}
+      className="absolute top-5 right-5 cursor-pointer md:top-10 md:right-10"
+    >
       <XIcon size={24} className="stroke-[#A4A4A4]" />
     </button>
   );

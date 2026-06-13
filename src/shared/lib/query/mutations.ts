@@ -620,7 +620,7 @@ export const usePostNote = () => {
         queryKey: noteKeys.lists(),
       });
 
-      router.push(`/goal/${response.goalId}/note/${response.id}`);
+      router.replace(`/goal/${response.goalId}/note/${response.id}`);
     },
     onError: () => {
       showToast(t.mutations.noteCreateFail, 'fail');
@@ -638,7 +638,7 @@ export const usePatchNote = (noteId: number, goalId: number) => {
     onSuccess: (response) => {
       queryClient.setQueryData(noteQueries.detail(noteId).queryKey, response);
       queryClient.invalidateQueries({ queryKey: noteKeys.lists() });
-      router.push(`/goal/${goalId}/note/${noteId}`);
+      router.replace(`/goal/${goalId}/note/${noteId}`);
     },
     onError: () => showToast(t.mutations.noteUpdateFail, 'fail'),
   });
@@ -663,7 +663,7 @@ export const useDeleteNote = (noteId: number, goalId: number) => {
       });
 
       const page = searchParams.get('page') ?? '1';
-      router.push(`/goal/${goalId}/note?page=${page}`);
+      router.replace(`/goal/${goalId}/note?page=${page}`);
     },
     onError: () => {
       showToast(t.mutations.noteDeleteFail, 'fail');

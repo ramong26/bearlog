@@ -9,13 +9,13 @@ export default function NoteDetailLayout({ children }: { children: React.ReactNo
   const { goalId } = useParams<{ goalId: string }>();
 
   const handleClose = () => {
-    router.push('/goal/' + goalId + '/note');
+    router.replace(`/goal/${goalId}/note`);
   };
 
   return (
     <div className={clsx('fixed inset-0 z-50 overflow-y-auto bg-white dark:bg-gray-850')}>
       {children}
-      <NoteCloseButton onClose={handleClose} />
+      <NoteCloseButton onCloseAction={handleClose} />
     </div>
   );
 }
