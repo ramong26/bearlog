@@ -31,11 +31,20 @@ jobs:
         run: pnpm run build
 
       - name: Generate API types
-        run: pnpm exec openapi-typescript ${{ secrets.OPENAPI_URL }} -o src/shared/types/api/schemas/api.types.ts
+        env:
+          OPENAPI_URL: ${{ secrets.OPENAPI_URL }}
+        run: |
+          if [ -z "$OPENAPI_URL" ]; then
+            echo "OPENAPI_URL secret is not available (e.g. PR from a fork). Skipping type generation."
+            exit 0
+          fi
+          pnpm exec openapi-typescript "$OPENAPI_URL" -o src/shared/types/api/schemas/api.types.ts
+          echo "TYPES_GENERATED=true" >> "$GITHUB_ENV"
 
       - name: Type check
         run: pnpm run typecheck
 
       - name: Check for generated file changes
+        if: env.TYPES_GENERATED == 'true'
         run: |
           git diff --exit-code src/shared/types/api/schemas/api.types.ts
